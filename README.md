@@ -1,12 +1,27 @@
 # lengend-game-hack
 lengend dos game hack for macOS
 
-Edit Game save file
+Edit Game
+ 
+Character Save File
 
-main character
+Z.dat File
 
-team member
+main character data modify
 
-attack list
+team member list modify
+
+attack list modify
 
 etc.
+
+stay tuned.
+
+**How to use**
+Download install/dmg
+
+Install app
+
+Open app
+
+Done.

@@ -1,7 +1,7 @@
 # lengend-game-hack
 lengend dos game hack for macOS
 
-Edit Game
+###### **Edit Game**
  
 Character Save File
 
@@ -17,7 +17,8 @@ etc.
 
 stay tuned.
 
-**How to use**
+##### **How to use**
+
 Download install/dmg
 
 Install app

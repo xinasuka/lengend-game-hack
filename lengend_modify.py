@@ -1,3 +1,4 @@
+import lang
 import os.path
 import json
 import struct
@@ -116,7 +117,7 @@ def char_window_btn_refresh():
     # 重置中毒除數
     reset_data_item(root.input_venom_divisor, zdata_venom_divisor_value)
 
-    root.label_status.set("全部數據更新完畢")
+    root.label_status.set(lang.TXT_SAVE_REFRESHED)
 
 
 # 重置單個屬性
@@ -199,7 +200,7 @@ def char_window_btn_write():
 
     # 寫入存檔
     rewrite_character()
-    root.label_status.set("成功寫入所有數據")
+    root.label_status.set(lang.TXT_SAVE_WRITEN)
 
 
 def char_window_btn_close():
@@ -257,7 +258,7 @@ def create_sub_team_menu(parent_pane, member, width=10):
 def show_character_window():
     global root
     root = Tk()
-    root.title("人物屬性與數據")
+    root.title(lang.TITLE_CHAR_DATA)
     root.resizable(0, 0)
 
     # paned window
@@ -265,7 +266,7 @@ def show_character_window():
     pane.pack(fill=BOTH, expand=True, padx=0, pady=0)
 
     # 左側人物數據
-    pane_char = LabelFrame(pane, text="人物數據")
+    pane_char = LabelFrame(pane, text=lang.TXT_CHAR_DATA)
     pane_char.pack(side=LEFT, fill=BOTH, expand=True, padx=10, pady=10)
 
     # 右側面板
@@ -277,19 +278,19 @@ def show_character_window():
     pane_middle.pack(side=RIGHT, fill=Y, expand=True, padx=10, pady=10)
 
     # 右側上方隊友列表
-    pane_team = LabelFrame(pane_right, text="隊友列表")
+    pane_team = LabelFrame(pane_right, text=lang.TXT_MEMBER_LST)
     pane_team.pack(side=TOP, fill=BOTH, expand=True, padx=0, pady=(0, 2))
 
     # 右側下方關於隊友的說明
-    pane_team_desc = LabelFrame(pane_right, text="隊友說明")
+    pane_team_desc = LabelFrame(pane_right, text=lang.TXT_MEMBER_DESC)
     pane_team_desc.pack(side=BOTTOM, fill=BOTH, expand=True, padx=0, pady=(2, 0))
 
     # 中側上方武功列表
-    pane_martial = LabelFrame(pane_middle, text="武功列表")
+    pane_martial = LabelFrame(pane_middle, text=lang.TXT_ATTACK_LST)
     pane_martial.pack(side=TOP, fill=X, expand=True, padx=0, pady=(0, 2))
 
     # 中側下放毒性增強
-    pane_venom = LabelFrame(pane_middle, text="毒性增強")
+    pane_venom = LabelFrame(pane_middle, text=lang.TXT_VENOM_ENHANCE)
     pane_venom.pack(side=BOTTOM, fill=BOTH, expand=True, padx=0, pady=(2, 0))
 
     # 每一個輸入框都變成root的一個屬性，方面後面取值
@@ -301,9 +302,9 @@ def show_character_window():
     # 右側武功列表
     pane = Frame(pane_martial)
     pane.pack(fill=X, expand=True, padx=10, pady=2)
-    label = Label(pane, text="武 功", width=6)
+    label = Label(pane, text=lang.TXT_ATTACK, width=6)
     label.pack(side=LEFT, fill=BOTH, expand=True)
-    label = Label(pane, text="等 級 (1~10)", width=6)
+    label = Label(pane, text=lang.TXT_LEVEL, width=6)
     label.pack(side=RIGHT, fill=BOTH, expand=True)
 
     pane = Frame(pane_martial)
@@ -332,7 +333,7 @@ def show_character_window():
     # 毒性增強設定
     label = Label(pane_venom, text=zdata_venom_divisor_desc)
     label.pack(side=TOP, fill=BOTH, expand=True)
-    input = create_sub_character_input(pane_venom, "中毒除數", zdata_venom_divisor_value)
+    input = create_sub_character_input(pane_venom, lang.TXT_VENOM_DIVISOR, zdata_venom_divisor_value)
     root.input_venom_divisor = input
 
     # 下側按鈕
@@ -340,16 +341,17 @@ def show_character_window():
     pane.pack(fill=X, expand=False, padx=10, pady=10)
 
     label_status = StringVar()
-    label_status.set("全部數據讀取完畢")
+    label_status.set(lang.TXT_SAVE_LOADED)
     label = Label(pane, textvariable=label_status)
     label.pack(side=LEFT, fill=BOTH, expand=True)
     root.label_status = label_status
 
-    btn = Button(pane, text="返 回", command=char_window_btn_close)
+    # 返回，写入，刷新
+    btn = Button(pane, text=lang.BTN_RETURN, command=char_window_btn_close)
     btn.pack(side=RIGHT, fill=BOTH, expand=True, padx=4)
-    btn = Button(pane, text="寫 入", command=char_window_btn_write)
+    btn = Button(pane, text=lang.BTN_WRITE, command=char_window_btn_write)
     btn.pack(side=RIGHT, fill=BOTH, expand=True, padx=4)
-    btn = Button(pane, text="刷 新", command=char_window_btn_refresh)
+    btn = Button(pane, text=lang.BTN_REFRESH, command=char_window_btn_refresh)
     btn.pack(side=RIGHT, fill=BOTH, expand=True, padx=4)
 
     root.update_idletasks()  # Update "requested size" from geometry manager
@@ -369,7 +371,7 @@ def main_window_btn_read():
     err = ""
     save_path = root.input_save_path.get()
     if not os.path.exists(save_path):
-        err = "錯誤: .GRP存檔文件不存在"
+        err = lang.ERR_SAVE_NOT_EXIST
         root.input_save_status.set(err)
         logging.error(err)
         return
@@ -377,7 +379,7 @@ def main_window_btn_read():
 
     zdata_path = root.input_zdata_path.get()
     if not os.path.exists(zdata_path):
-        err = "錯誤: Z.dat數據文件不存在"
+        err = lang.ERR_DATA_NOT_EXIST
         root.input_zdata_status.set(err)
         logging.error(err)
         return
@@ -416,7 +418,7 @@ def create_sub_path_input(parent_pane, desc, text, btn_command):
     input.pack(side=LEFT, fill=BOTH, expand=True)
     input.insert(0, text)
 
-    btn = Button(pane, text="選 擇", width=8, command=btn_command)
+    btn = Button(pane, text=lang.BTN_SELECT, width=8, command=btn_command)
     btn.pack(side=RIGHT, fill=X, expand=False, padx=4)
 
     return label_status, input
@@ -425,7 +427,7 @@ def create_sub_path_input(parent_pane, desc, text, btn_command):
 # 選擇存檔文件位置
 def main_window_select_save_file():
     global save_file_path
-    path = filedialog.askopenfilename(defaultextension=".grp", multiple=False, title="選擇存檔文件")
+    path = filedialog.askopenfilename(defaultextension=".grp", multiple=False, title=lang.TITLE_SAVE_PATH_SEL)
     if not path:
         return
     save_file_path = path
@@ -438,7 +440,7 @@ def main_window_select_save_file():
 # 選擇數據文件位置
 def main_window_select_zdata_file():
     global zdata_file_path
-    path = filedialog.askopenfilename(defaultextension=".dat", multiple=False, title="選擇數據文件")
+    path = filedialog.askopenfilename(defaultextension=".dat", multiple=False, title=lang.TITLE_DATA_PATH_SEL)
     if not path:
         return
     zdata_file_path = path
@@ -468,12 +470,12 @@ def show_main_window():
 
     # 返回(文件狀態,文件路徑)
     input: Entry
-    (status, input) = create_sub_path_input(pane, "存檔文件位置 (*.GRP) :", save_file_path, main_window_select_save_file)
+    (status, input) = create_sub_path_input(pane, lang.TXT_SAVE_PATH, save_file_path, main_window_select_save_file)
     root.input_save_path = input
     root.input_save_status = status
 
     # 返回(文件狀態,文件路徑)
-    (status, input) = create_sub_path_input(pane, "數據文件位置 (Z.data) :", zdata_file_path, main_window_select_zdata_file)
+    (status, input) = create_sub_path_input(pane, lang.TXT_DATA_PATH, zdata_file_path, main_window_select_zdata_file)
     root.input_zdata_path = input
     root.input_zdata_status = status
 
@@ -486,10 +488,10 @@ def show_main_window():
     pane = Frame(pane)
     pane.pack(side=RIGHT, fill=X, expand=False, padx=10)
 
-    btn = Button(pane, text="讀 取", width=8, command=main_window_btn_read)
+    btn = Button(pane, text=lang.BTN_READ, width=8, command=main_window_btn_read)
     btn.pack(side=LEFT, fill=BOTH, expand=True, padx=4)
 
-    btn = Button(pane, text="關 閉", width=8, command=main_window_btn_close)
+    btn = Button(pane, text=lang.BTN_CLOSE, width=8, command=main_window_btn_close)
     btn.pack(side=RIGHT, fill=BOTH, expand=True, padx=4)
 
     root.update_idletasks()  # Update "requested size" from geometry manager

@@ -2,6 +2,8 @@
   "app_title": "金庸群俠傳修改器 (Ver 1.2)",
   "save_file_path": "/Volumes/Games/Dosbox/games/LEGEND/R1.GRP",
   "zdata_file_path": "/Volumes/Games/Dosbox/games/LEGEND/Z.DAT",
+  "char_name_address": "0x034c",
+  "char_name_maxcount": "3",
   "char_attributes_address": {
     "內力陰陽": "0x394",
     "輕 功": "0x39C",
@@ -129,5 +131,5 @@
   "team_members_start_address": "0x18",
   "team_members_address_step": "0x02",
   "team_members_maxcount": "6",
-  "team_members_desc": "如果主角不在隊列第一位，\n包括主角和其後面的隊友\n都不會顯示在隊列中。\n如果隊列第一位不為主角，\n戰鬥中主角也會強製出場。\n只要隊列中設置了無，\n那後面的隊友都不再顯示。\n已經加入隊友如果設置無，\n那這名隊友就消失了，\n跟選擇離隊不一樣。\n如果加入不可加入的隊友\n或加入多位同名隊友，\n當與這名NPC隊友對戰時，\n會同時出現，數據也共享。"
+  "team_members_desc": "主角姓名顯示最多3個字。\n如果隊列第一位不為主角，\n戰鬥中主角也會強製出場。\n只要隊列中設置了無，\n那後面的隊友都不再顯示。\n已經加入隊友如果設置無，\n那這名隊友就消失了，\n跟選擇離隊不一樣。\n如果加入不可加入的隊友\n或加入多位同名隊友，\n當與這名NPC隊友對戰時，\n會同時出現，數據也共享。"
 }

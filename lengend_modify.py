@@ -26,6 +26,10 @@ zdata_file_path = ""
 # 從data.json中加載屬性地址
 char_attributes_address = {}
 char_attributes_value: Dict[str, int] = {}
+# 主角姓名(big编码)
+char_name_main=""
+char_name_address=0x034c
+char_name_maxcount=3
 
 # 中毒除數(遊戲算法數值，不在存檔中)
 zdata_venom_divisor_address = 0x3600B
@@ -96,6 +100,10 @@ def main_entry_point():
 def char_window_btn_refresh():
     retrieve_character()
 
+    # 重設姓名
+    input = root.input_char_name
+    reset_char_item(input, char_name_main)
+
     # 重設屬性
     for key, val in char_attributes_value.items():
         input = root.input_attrs[key]
@@ -146,12 +154,15 @@ def reset_data_item(input, text):
     input.delete(0, END)
     input.insert(0, text)
 
-
 # 取得單個屬性值
 def retrieve_char_item(input):
     value = input.get()
     return int(value)
 
+# 取得姓名
+def retrieve_char_name(input):
+    value = input.get()
+    return value
 
 # 取得單個武功的值
 def retrieve_martial_list_item(mp):
@@ -173,8 +184,13 @@ def retrieve_data_item(input):
     return int(value)
 
 def char_window_btn_write():
+    global char_name_main
     global char_attributes_value
     global zdata_venom_divisor_value
+
+    # 读取姓名
+    input = root.input_char_name
+    char_name_main = retrieve_char_name(input)
 
     # 讀取全部屬性
     for key, val in char_attributes_value.items():
@@ -277,9 +293,13 @@ def show_character_window():
     pane_middle = Frame(pane)
     pane_middle.pack(side=RIGHT, fill=Y, expand=True, padx=10, pady=10)
 
+    # 右侧上方主角姓名
+    pane_char_name = LabelFrame(pane_right, text=lang.TXT_MAIN_NAME)
+    pane_char_name.pack(side=TOP, fill=X, expand=True, padx=0, pady=(0, 2))
+
     # 右側上方隊友列表
     pane_team = LabelFrame(pane_right, text=lang.TXT_MEMBER_LST)
-    pane_team.pack(side=TOP, fill=BOTH, expand=True, padx=0, pady=(0, 2))
+    pane_team.pack(side=TOP, fill=BOTH, expand=True, padx=0, pady=(2, 2))
 
     # 右側下方關於隊友的說明
     pane_team_desc = LabelFrame(pane_right, text=lang.TXT_MEMBER_DESC)
@@ -299,7 +319,7 @@ def show_character_window():
         input = create_sub_character_input(pane_char, key, val)
         root.input_attrs[key] = input
 
-    # 右側武功列表
+    # 中间武功列表
     pane = Frame(pane_martial)
     pane.pack(fill=X, expand=True, padx=10, pady=2)
     label = Label(pane, text=lang.TXT_ATTACK, width=6)
@@ -316,6 +336,12 @@ def show_character_window():
         tier = char_martial_tier_list[x]
         input = create_sub_martial_input(pane, martial_name_from_type(type), martial_ladder_from_tier(tier))
         root.input_martial.append(input)
+
+    # 右侧主角姓名
+    input = create_sub_character_input(pane_char_name, lang.TXT_NAME, char_name_main)
+    root.input_char_name = input
+    pane = Frame(pane_char_name)
+    pane.pack(fill=X, expand=True, padx=0, pady=(0, 2))
 
     # 右側隊友列表
     pane = Frame(pane_team)
@@ -512,6 +538,8 @@ def retrieve_game_data():
     global app_title
     global save_file_path
     global zdata_file_path
+    global char_name_address
+    global char_name_maxcount
     global char_attributes_address
     global martial_arts_names
     global zdata_venom_divisor_address
@@ -542,6 +570,10 @@ def retrieve_game_data():
             save_file_path = game_data["save_file_path"]
         if "zdata_file_path" in game_data:
             zdata_file_path = game_data["zdata_file_path"]
+        if "char_name_address" in game_data:
+            char_name_address = game_data["char_name_address"]
+        if "char_name_maxcount" in game_data:
+            char_name_maxcount = game_data["char_name_maxcount"]
         if "char_attributes_address" in game_data:
             char_attributes_address = game_data["char_attributes_address"]
         if "martial_arts_names" in game_data:
@@ -565,6 +597,8 @@ def retrieve_game_data():
             else:
                 team_members_names[key] = int(val, 16)
 
+        char_name_address = int(game_data["char_name_address"], 16)
+        char_name_maxcount = int(game_data["char_name_maxcount"])
         char_martial_type_start_address = int(game_data["char_martial_type_start_address"], 16)
         char_martial_type_address_step = int(game_data["char_martial_type_address_step"], 16)
         char_martial_tier_start_address = int(game_data["char_martial_tier_start_address"], 16)
@@ -595,6 +629,7 @@ def dump_save_path(save_path, zdata_path):
 
 # 讀取人物數據
 def retrieve_character():
+    global char_name_main
     global char_attributes_value
     global char_martial_type_list
     global char_martial_tier_list
@@ -608,6 +643,11 @@ def retrieve_character():
     '''
     with open(save_file_path, mode='rb') as f:
         logging.debug("讀取人物數據 開始:")
+
+        bytes = read_file_byte_raw(f, char_name_address, char_name_maxcount*2)
+        char_name_main = bytes.decode("big5_tw")
+        logging.debug("讀取人物姓名 -> %s" % char_name_main)
+
         char_attributes_value = {}
         for key, val in char_attributes_address.items():
             address = char_attributes_address[key]
@@ -666,6 +706,10 @@ def read_file_byte(f, address, count, unsigned=False):
     val = struct.unpack(fmt, binary_data)[0]
     return val
 
+def read_file_byte_raw(f, address, count):
+    f.seek(address)
+    binary_data = f.read(count)
+    return binary_data
 
 # 向文件中寫入字節(金庸大部分數據都是short)
 def write_file_byte(f, address, count, value, unsigned=False):
@@ -681,6 +725,10 @@ def write_file_byte(f, address, count, value, unsigned=False):
         fmt = fmt.upper()
     f.write(struct.pack(fmt, value))
 
+def write_file_byte_raw(f, address, bytes):
+    f.seek(address)
+    f.write(bytes)
+
 
 # 重寫人物數據
 def rewrite_character():
@@ -693,6 +741,11 @@ def rewrite_character():
         # i: int
         # f: float
         # q: long long int [1]
+
+        bytes = char_name_main.encode("big5_tw")
+        truncated_b = bytes[:char_name_maxcount * 2]
+        write_file_byte_raw(f, char_name_address, truncated_b)
+        logging.debug("重寫人物姓名 -> %s" % char_name_main)
 
         logging.debug("重寫人物屬性")
         for key, val in char_attributes_address.items():

@@ -7,6 +7,8 @@ Character Save File
 
 Z.dat File
 
+change main character's name(big5)
+
 main character data modify
 
 team member list modify

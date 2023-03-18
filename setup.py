@@ -17,7 +17,7 @@ Make a dmg:
     Open the dmg file and create a hidden folder called .background inside it
 	Copy your background image to that folder
 	(You need to include the background file in the hidden folder in the dmg file.)
-	Set that image as the folder’s background image using Finder
+	Set that image as the folder's background image using Finder
     Drag App file and Applications alias into this dmg file
     Eject out dmg
     Open Disk Utility

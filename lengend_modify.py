@@ -645,6 +645,7 @@ def retrieve_character():
         logging.debug("讀取人物數據 開始:")
 
         bytes = read_file_byte_raw(f, char_name_address, char_name_maxcount*2)
+        bytes = remove_trailing_zeros(bytes) # 默認存檔中姓名含有0x00，需要去掉
         char_name_main = bytes.decode("big5_tw")
         logging.debug("讀取人物姓名 -> %s" % char_name_main)
 
@@ -689,6 +690,19 @@ def retrieve_character():
 
     logging.debug("讀取遊戲數據 完成.")
 
+def remove_trailing_zeros(byte_array):
+    """
+    Removes trailing zeros from a byte array.
+
+    :param byte_array: The byte array to remove trailing zeros from.
+    :type byte_array: bytes
+    :return: The byte array without trailing zeros.
+    :rtype: bytes
+    """
+    i = len(byte_array) - 1
+    while i >= 0 and byte_array[i] == 0:
+        i -= 1
+    return byte_array[:i + 1]
 
 # 從文件中讀取字節(金庸大部分數據都是short)
 def read_file_byte(f, address, count, unsigned=False):

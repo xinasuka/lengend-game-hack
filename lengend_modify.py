@@ -30,6 +30,7 @@ char_attributes_value: Dict[str, int] = {}
 char_name_main=""
 char_name_address=0x034c
 char_name_maxcount=3
+char_home_name_address=0x1896E
 
 # 中毒除數(遊戲算法數值，不在存檔中)
 zdata_venom_divisor_address = 0x3600B
@@ -540,6 +541,7 @@ def retrieve_game_data():
     global zdata_file_path
     global char_name_address
     global char_name_maxcount
+    global char_home_name_address
     global char_attributes_address
     global martial_arts_names
     global zdata_venom_divisor_address
@@ -572,6 +574,8 @@ def retrieve_game_data():
             zdata_file_path = game_data["zdata_file_path"]
         if "char_name_address" in game_data:
             char_name_address = game_data["char_name_address"]
+        if "char_home_name_address" in game_data:
+            char_home_name_address = game_data["char_home_name_address"]
         if "char_name_maxcount" in game_data:
             char_name_maxcount = game_data["char_name_maxcount"]
         if "char_attributes_address" in game_data:
@@ -599,6 +603,7 @@ def retrieve_game_data():
 
         char_name_address = int(game_data["char_name_address"], 16)
         char_name_maxcount = int(game_data["char_name_maxcount"])
+        char_home_name_address = int(game_data["char_home_name_address"], 16)
         char_martial_type_start_address = int(game_data["char_martial_type_start_address"], 16)
         char_martial_type_address_step = int(game_data["char_martial_type_address_step"], 16)
         char_martial_tier_start_address = int(game_data["char_martial_tier_start_address"], 16)
@@ -646,7 +651,11 @@ def retrieve_character():
 
         bytes = read_file_byte_raw(f, char_name_address, char_name_maxcount*2)
         bytes = remove_trailing_zeros(bytes) # 默認存檔中姓名含有0x00，需要去掉
-        char_name_main = bytes.decode("big5_tw")
+        try:
+            char_name_main = bytes.decode("big5_tw")
+        except UnicodeDecodeError as e:
+            char_name_main = ""
+            logging.debug(f"Error: {e}")
         logging.debug("讀取人物姓名 -> %s" % char_name_main)
 
         char_attributes_value = {}
@@ -704,6 +713,24 @@ def remove_trailing_zeros(byte_array):
         i -= 1
     return byte_array[:i + 1]
 
+def fill_with_holder(byte_array, length, holder=0):
+    """
+    Fills a bytes object with zeros up to a specified length.
+
+    :param byte_array: The bytes object to fill with zeros.
+    :type byte_array: bytes
+    :param length: The length to fill the bytes object up to.
+    :type length: int
+    :return: The filled bytes object.
+    :rtype: bytes
+    """
+    hl = length - len(byte_array)
+    if hl < 0:
+        byte_array = byte_array[:length]
+    elif hl > 0:
+        byte_array = byte_array + holder.to_bytes(hl, 'big')
+    return byte_array
+
 # 從文件中讀取字節(金庸大部分數據都是short)
 def read_file_byte(f, address, count, unsigned=False):
     f.seek(address)
@@ -756,10 +783,16 @@ def rewrite_character():
         # f: float
         # q: long long int [1]
 
-        bytes = char_name_main.encode("big5_tw")
-        truncated_b = bytes[:char_name_maxcount * 2]
-        write_file_byte_raw(f, char_name_address, truncated_b)
-        logging.debug("重寫人物姓名 -> %s" % char_name_main)
+        try:
+            bigb = char_name_main.encode("big5_tw")
+        except UnicodeEncodeError as e:
+            bigb = bytes(char_name_maxcount * 2)
+            logging.debug(f"Error: {e}")
+        name_b = fill_with_holder(bigb, char_name_maxcount * 2)
+        home_name_b = fill_with_holder(bigb, char_name_maxcount * 2, 0x20)
+        write_file_byte_raw(f, char_name_address, name_b)
+        write_file_byte_raw(f, char_home_name_address, home_name_b)
+        logging.debug("重寫人物姓名 -> %s 家居名 -> %s" % (name_b.decode("big5"), home_name_b.decode("big5")))
 
         logging.debug("重寫人物屬性")
         for key, val in char_attributes_address.items():

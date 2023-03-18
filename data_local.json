@@ -4,6 +4,7 @@
   "zdata_file_path": "/Volumes/Games/Dosbox/games/LEGEND/Z.DAT",
   "char_name_address": "0x034c",
   "char_name_maxcount": "3",
+  "char_home_name_address": "0x1896E",
   "char_attributes_address": {
     "內力陰陽": "0x394",
     "輕 功": "0x39C",

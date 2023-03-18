@@ -2,7 +2,20 @@
 import sys
 
 import encodings
+from tkinter import *
+def remove_trailing_zeros(byte_array):
+    """
+    Removes trailing zeros from a byte array.
 
+    :param byte_array: The byte array to remove trailing zeros from.
+    :type byte_array: bytes
+    :return: The byte array without trailing zeros.
+    :rtype: bytes
+    """
+    i = len(byte_array) - 1
+    while i >= 0 and byte_array[i] == 0:
+        i -= 1
+    return byte_array[:i + 1]
 
 
 if __name__ == '__main__':
@@ -34,3 +47,8 @@ if __name__ == '__main__':
     # decode the bytes object back to string
     truncated_s = truncated_b.decode('utf-8')
     print(truncated_s)
+
+    byte_array = b'\x01\x02\x03\x00\x00\x00'
+    new_byte_array = remove_trailing_zeros(byte_array)
+    print(new_byte_array)  # b'\x01\x02\x03'
+

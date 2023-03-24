@@ -32,6 +32,12 @@ char_name_address=0x034c
 char_name_maxcount=3
 char_home_name_address=0x1896E
 
+# 主角位置
+char_position_address=0x04
+char_position=[]
+# 全地圖位置，坐標為[x,y]數組
+map_positions={}
+
 # 中毒除數(遊戲算法數值，不在存檔中)
 zdata_venom_divisor_address = 0x3600B
 zdata_venom_divisor_value = 0x01
@@ -105,6 +111,10 @@ def char_window_btn_refresh():
     input = root.input_char_name
     reset_char_item(input, char_name_main)
 
+    # 重設位置
+    input = root.input_char_pos
+    reset_char_pos(input, char_position)
+
     # 重設屬性
     for key, val in char_attributes_value.items():
         input = root.input_attrs[key]
@@ -134,6 +144,11 @@ def reset_char_item(input, text):
     input.delete(0, END)
     input.insert(0, text)
 
+# 重置主角位置
+def reset_char_pos(mp, position):
+    name = retrieve_map_name(position)
+    options = mp
+    options.set(name)
 
 # 重置單個武功
 def reset_martial_list_item(mp, type, tier):
@@ -184,14 +199,39 @@ def retrieve_data_item(input):
     value = input.get()
     return int(value)
 
+# 取得地圖坐標
+def retrieve_map_pos(mp):
+    options = mp
+    name = options.get()
+    return map_positions[name]
+
+# 取得地圖位置名
+def retrieve_map_name(position):
+    for key, val in map_positions.items():
+        if val[0] == position[0] and val[1] == position[1]:
+            return key
+    pos = ""
+    #pos = next(iter(map_positions))
+    for key in map_positions:
+        pos = key
+        break
+    # 自由位置，需要重設位置坐標
+    map_positions[pos] = position
+    return pos
+
 def char_window_btn_write():
     global char_name_main
+    global char_position
     global char_attributes_value
     global zdata_venom_divisor_value
 
     # 读取姓名
     input = root.input_char_name
     char_name_main = retrieve_char_name(input)
+
+    # 讀取地址
+    input = root.input_char_pos
+    char_position = retrieve_map_pos(input)
 
     # 讀取全部屬性
     for key, val in char_attributes_value.items():
@@ -271,6 +311,19 @@ def create_sub_team_menu(parent_pane, member, width=10):
     dp.pack(side=TOP, fill=BOTH, expand=True)
     return options
 
+# 生成人物地圖位置列表
+def create_sub_char_pos_menu(parent_pane, desc, position, desc_with=6, pos_width=6):
+    pane = Frame(parent_pane)
+    pane.pack(fill=X, expand=True, padx=10, pady=2)
+    label = Label(pane, text=desc, width=desc_with)
+    label.pack(side=LEFT, fill=BOTH, expand=True)
+    options = StringVar(root)
+    options.set(retrieve_map_name(position))
+    dp = OptionMenu(pane, options, *map_positions.keys())
+    dp.config(width=pos_width)
+    dp.pack(side=RIGHT, fill=BOTH, expand=True)
+    return options
+
 # 顯示人物屬性窗口
 def show_character_window():
     global root
@@ -294,9 +347,9 @@ def show_character_window():
     pane_middle = Frame(pane)
     pane_middle.pack(side=RIGHT, fill=Y, expand=True, padx=10, pady=10)
 
-    # 右侧上方主角姓名
-    pane_char_name = LabelFrame(pane_right, text=lang.TXT_MAIN_NAME)
-    pane_char_name.pack(side=TOP, fill=X, expand=True, padx=0, pady=(0, 2))
+    # 右侧上方主角設定
+    pane_char_setting = LabelFrame(pane_right, text=lang.TXT_MAIN_SETTING)
+    pane_char_setting.pack(side=TOP, fill=X, expand=True, padx=0, pady=(0, 2))
 
     # 右側上方隊友列表
     pane_team = LabelFrame(pane_right, text=lang.TXT_MEMBER_LST)
@@ -339,10 +392,16 @@ def show_character_window():
         root.input_martial.append(input)
 
     # 右侧主角姓名
-    input = create_sub_character_input(pane_char_name, lang.TXT_NAME, char_name_main)
+    input = create_sub_character_input(pane_char_setting, lang.TXT_NAME, char_name_main, 6, 10)
     root.input_char_name = input
-    pane = Frame(pane_char_name)
-    pane.pack(fill=X, expand=True, padx=0, pady=(0, 2))
+    pane = Frame(pane_char_setting)
+    pane.pack(side=TOP, fill=X, expand=True, padx=0, pady=2)
+
+    # 右側主角位置
+    input = create_sub_char_pos_menu(pane_char_setting, lang.TXT_POSITION, char_position, 6, 8)
+    root.input_char_pos = input
+    pane = Frame(pane_char_setting)
+    pane.pack(side=BOTTOM, fill=X, expand=True, padx=0, pady=(0, 2))
 
     # 右側隊友列表
     pane = Frame(pane_team)
@@ -542,6 +601,8 @@ def retrieve_game_data():
     global char_name_address
     global char_name_maxcount
     global char_home_name_address
+    global char_position_address
+    global map_positions
     global char_attributes_address
     global martial_arts_names
     global zdata_venom_divisor_address
@@ -572,12 +633,8 @@ def retrieve_game_data():
             save_file_path = game_data["save_file_path"]
         if "zdata_file_path" in game_data:
             zdata_file_path = game_data["zdata_file_path"]
-        if "char_name_address" in game_data:
-            char_name_address = game_data["char_name_address"]
-        if "char_home_name_address" in game_data:
-            char_home_name_address = game_data["char_home_name_address"]
-        if "char_name_maxcount" in game_data:
-            char_name_maxcount = game_data["char_name_maxcount"]
+        if "map_positions" in game_data:
+            map_positions = game_data["map_positions"]
         if "char_attributes_address" in game_data:
             char_attributes_address = game_data["char_attributes_address"]
         if "martial_arts_names" in game_data:
@@ -604,6 +661,7 @@ def retrieve_game_data():
         char_name_address = int(game_data["char_name_address"], 16)
         char_name_maxcount = int(game_data["char_name_maxcount"])
         char_home_name_address = int(game_data["char_home_name_address"], 16)
+        char_position_address = int(game_data["char_position_address"], 16)
         char_martial_type_start_address = int(game_data["char_martial_type_start_address"], 16)
         char_martial_type_address_step = int(game_data["char_martial_type_address_step"], 16)
         char_martial_tier_start_address = int(game_data["char_martial_tier_start_address"], 16)
@@ -635,6 +693,7 @@ def dump_save_path(save_path, zdata_path):
 # 讀取人物數據
 def retrieve_character():
     global char_name_main
+    global char_position
     global char_attributes_value
     global char_martial_type_list
     global char_martial_tier_list
@@ -657,6 +716,13 @@ def retrieve_character():
             char_name_main = ""
             logging.debug(f"Error: {e}")
         logging.debug("讀取人物姓名 -> %s" % char_name_main)
+
+        posx = read_file_byte(f, char_position_address, 2)
+        posy = read_file_byte(f, char_position_address+2, 2)
+        char_position.clear()
+        char_position.append(posx)
+        char_position.append(posy)
+        logging.debug("讀取人物位置 -> (%d,%d)" % (posx, posy))
 
         char_attributes_value = {}
         for key, val in char_attributes_address.items():
@@ -793,6 +859,12 @@ def rewrite_character():
         write_file_byte_raw(f, char_name_address, name_b)
         write_file_byte_raw(f, char_home_name_address, home_name_b)
         logging.debug("重寫人物姓名 -> %s 家居名 -> %s" % (name_b.decode("big5"), home_name_b.decode("big5")))
+
+        posx = char_position[0]
+        posy = char_position[1]
+        write_file_byte(f, char_position_address, 2, posx)
+        write_file_byte(f, char_position_address+2, 2, posy)
+        logging.debug("重寫人物位置 -> (%d,%d)" % (posx, posy))
 
         logging.debug("重寫人物屬性")
         for key, val in char_attributes_address.items():

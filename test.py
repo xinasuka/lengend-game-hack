@@ -52,7 +52,7 @@ def test_big5():
     new_byte_array = remove_trailing_zeros(byte_array)
     print(new_byte_array)  # b'\x01\x02\x03'
 
-if __name__ == '__main__':
+def test_json_file():
     with open("data_local.json", "r") as f:
         game_data = json.load(f)
         print(game_data["map_positions"])
@@ -67,3 +67,10 @@ if __name__ == '__main__':
     with open("test.json", "w") as f:
         # prevent json from transforming chars to unicode
         json.dump(game_data, f, ensure_ascii=True)
+
+if __name__ == '__main__':
+    n = 10
+    b = bytearray(n)
+    b[:] = [0x20] * n
+    print(b)
+

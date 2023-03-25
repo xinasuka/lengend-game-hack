@@ -19,7 +19,7 @@ with open("data_local.json", "r") as f:
         y_bytes = struct.pack(">H", y)
         x = struct.unpack("<H", x_bytes)[0]
         y = struct.unpack("<H", y_bytes)[0]
-        print("%s: %d %d" % (key, x, y))
+        #print("%s: %d %d" % (key, x, y))
         map_positions[key] = (x, y)
 
 

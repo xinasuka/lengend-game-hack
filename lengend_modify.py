@@ -19,6 +19,8 @@ game_data = {}
 app_title=""
 # 存檔文件位置(R1存檔1, R2存檔2, R3存檔3)
 save_file_path = ""
+# 動態數據文件位置(D1存檔1, D2存檔2, D3存檔3)
+dync_file_path = ""
 # 遊戲數據文件位置(Z.dat)
 zdata_file_path = ""
 
@@ -31,6 +33,16 @@ char_name_main=""
 char_name_address=0x034c
 char_name_maxcount=3
 char_home_name_address=0x1896E
+
+# 主角位置
+char_position_address=0x04
+char_position=[]
+# 全地圖位置，坐標為[x,y]數組
+map_positions={}
+
+# 商人位置坐標
+merc_position=""
+merchant_positions={}
 
 # 中毒除數(遊戲算法數值，不在存檔中)
 zdata_venom_divisor_address = 0x3600B
@@ -105,6 +117,10 @@ def char_window_btn_refresh():
     input = root.input_char_name
     reset_char_item(input, char_name_main)
 
+    # 重設位置
+    input = root.input_char_pos
+    reset_char_pos(input, char_position)
+
     # 重設屬性
     for key, val in char_attributes_value.items():
         input = root.input_attrs[key]
@@ -123,6 +139,10 @@ def char_window_btn_refresh():
         input = root.input_team[x]
         reset_team_list_member(input, member)
 
+    # 重設商人位置
+    input = root.input_merc_pos
+    reset_merc_pos(input, merc_position)
+
     # 重置中毒除數
     reset_data_item(root.input_venom_divisor, zdata_venom_divisor_value)
 
@@ -134,6 +154,17 @@ def reset_char_item(input, text):
     input.delete(0, END)
     input.insert(0, text)
 
+# 重置主角位置
+def reset_char_pos(mp, position):
+    name = retrieve_map_name(position)
+    options = mp
+    options.set(name)
+
+# 重置商人位置
+def reset_merc_pos(mp, position):
+    name = position
+    options = mp
+    options.set(name)
 
 # 重置單個武功
 def reset_martial_list_item(mp, type, tier):
@@ -165,6 +196,12 @@ def retrieve_char_name(input):
     value = input.get()
     return value
 
+# 取得商人位置
+def retrieve_merc_pos(mp):
+    options = mp
+    name = options.get()
+    return name
+
 # 取得單個武功的值
 def retrieve_martial_list_item(mp):
     options = mp[0]
@@ -184,14 +221,40 @@ def retrieve_data_item(input):
     value = input.get()
     return int(value)
 
+# 取得地圖坐標
+def retrieve_map_pos(mp):
+    options = mp
+    name = options.get()
+    return map_positions[name]
+
+# 取得地圖位置名
+def retrieve_map_name(position):
+    for key, val in map_positions.items():
+        if val[0] == position[0] and val[1] == position[1]:
+            return key
+    pos = ""
+    #pos = next(iter(map_positions))
+    for key in map_positions:
+        pos = key
+        break
+    # 自由位置，需要重設位置坐標
+    map_positions[pos] = position
+    return pos
+
 def char_window_btn_write():
     global char_name_main
+    global char_position
     global char_attributes_value
+    global merc_position
     global zdata_venom_divisor_value
 
     # 读取姓名
     input = root.input_char_name
     char_name_main = retrieve_char_name(input)
+
+    # 讀取地址
+    input = root.input_char_pos
+    char_position = retrieve_map_pos(input)
 
     # 讀取全部屬性
     for key, val in char_attributes_value.items():
@@ -211,6 +274,10 @@ def char_window_btn_write():
         input = root.input_team[x]
         member = retrieve_team_list_member(input)
         team_members_list[x] = member
+
+    # 讀取商人位置
+    input = root.input_merc_pos
+    merc_position = retrieve_merc_pos(input)
 
     # 讀取中毒除數
     zdata_venom_divisor_value = retrieve_data_item(root.input_venom_divisor)
@@ -239,7 +306,7 @@ def create_sub_character_input(parent_pane, desc, text, desc_width=6, text_width
 
 
 # 生成人物單個武功輸入框
-def create_sub_martial_input(parent_pane, type, tier, type_width=10, tier_width=10):
+def create_sub_martial_input(parent_pane, type, tier, type_width=10, tier_width=6):
     pane = Frame(parent_pane)
     pane.pack(fill=X, expand=True, padx=10, pady=2)
     # 讓武功成為選擇列表，而不是輸入
@@ -271,6 +338,33 @@ def create_sub_team_menu(parent_pane, member, width=10):
     dp.pack(side=TOP, fill=BOTH, expand=True)
     return options
 
+# 生成人物地圖位置列表
+def create_sub_char_pos_menu(parent_pane, desc, position, desc_width=6, pos_width=6):
+    pane = Frame(parent_pane)
+    pane.pack(fill=X, expand=True, padx=10, pady=2)
+    label = Label(pane, text=desc, width=desc_width)
+    label.pack(side=LEFT, fill=BOTH, expand=True)
+
+    options = StringVar(root)
+    options.set(retrieve_map_name(position))
+    dp = OptionMenu(pane, options, *map_positions.keys())
+    dp.config(width=pos_width)
+    dp.pack(side=RIGHT, fill=BOTH, expand=True)
+    return options
+
+# 生成商人地圖位置列表
+def create_sub_merc_pos_menu(parent_pane, desc, pos, desc_width=6, pos_width=6):
+    pane = Frame(parent_pane)
+    pane.pack(fill=X, expand=True, padx=10, pady=2)
+    label = Label(pane, text=desc, width=desc_width)
+    label.pack(side=TOP, fill=BOTH, expand=True)
+    options = StringVar(root)
+    options.set(pos)
+    dp = OptionMenu(pane, options, *merchant_positions.keys())
+    dp.config(width=pos_width)
+    dp.pack(side=BOTTOM, fill=BOTH, expand=True)
+    return options
+
 # 顯示人物屬性窗口
 def show_character_window():
     global root
@@ -282,9 +376,9 @@ def show_character_window():
     pane = Frame(root)
     pane.pack(fill=BOTH, expand=True, padx=0, pady=0)
 
-    # 左側人物數據
-    pane_char = LabelFrame(pane, text=lang.TXT_CHAR_DATA)
-    pane_char.pack(side=LEFT, fill=BOTH, expand=True, padx=10, pady=10)
+    # 做側面板
+    pane_left = Frame(pane)
+    pane_left.pack(side=LEFT, fill=Y, expand=True, padx=10, pady=10)
 
     # 右側面板
     pane_right = Frame(pane)
@@ -294,36 +388,48 @@ def show_character_window():
     pane_middle = Frame(pane)
     pane_middle.pack(side=RIGHT, fill=Y, expand=True, padx=10, pady=10)
 
-    # 右侧上方主角姓名
-    pane_char_name = LabelFrame(pane_right, text=lang.TXT_MAIN_NAME)
-    pane_char_name.pack(side=TOP, fill=X, expand=True, padx=0, pady=(0, 2))
-
-    # 右側上方隊友列表
-    pane_team = LabelFrame(pane_right, text=lang.TXT_MEMBER_LST)
-    pane_team.pack(side=TOP, fill=BOTH, expand=True, padx=0, pady=(2, 2))
-
-    # 右側下方關於隊友的說明
-    pane_team_desc = LabelFrame(pane_right, text=lang.TXT_MEMBER_DESC)
-    pane_team_desc.pack(side=BOTTOM, fill=BOTH, expand=True, padx=0, pady=(2, 0))
+    # 左側人物數據
+    pane_char = LabelFrame(pane_left, text=lang.TXT_CHAR_DATA)
+    pane_char.pack(side=TOP, fill=BOTH, expand=True, padx=0, pady=(0, 2))
 
     # 中側上方武功列表
     pane_martial = LabelFrame(pane_middle, text=lang.TXT_ATTACK_LST)
-    pane_martial.pack(side=TOP, fill=X, expand=True, padx=0, pady=(0, 2))
+    pane_martial.pack(side=TOP, fill=BOTH, expand=True, padx=0, pady=(0, 2))
 
-    # 中側下放毒性增強
-    pane_venom = LabelFrame(pane_middle, text=lang.TXT_VENOM_ENHANCE)
-    pane_venom.pack(side=BOTTOM, fill=BOTH, expand=True, padx=0, pady=(2, 0))
+    # 中側下方隊友列表
+    pane_team = LabelFrame(pane_middle, text=lang.TXT_MEMBER_LST)
+    pane_team.pack(side=BOTTOM, fill=BOTH, expand=True, padx=0, pady=(2, 2))
+
+    # 右侧上方主角設定
+    pane_char_setting = LabelFrame(pane_right, text=lang.TXT_MAIN_SETTING)
+    pane_char_setting.pack(side=TOP, fill=BOTH, expand=True, padx=0, pady=(0, 2))
+
+    # 右側下方關於隊友的說明
+    pane_team_desc = LabelFrame(pane_right, text=lang.TXT_MEMBER_DESC)
+    pane_team_desc.pack(side=BOTTOM, fill=BOTH, expand=True, padx=0, pady=(4, 2))
+
+    # 右側中間毒性增強
+    pane_venom = LabelFrame(pane_right, text=lang.TXT_VENOM_ENHANCE)
+    pane_venom.pack(side=BOTTOM, fill=BOTH, expand=True, padx=0, pady=(2, 2))
+
+    # 右側商人位置
+    pane_merchant = LabelFrame(pane_right, text=lang.TXT_MERCHANT_POS)
+    pane_merchant.pack(side=BOTTOM, fill=BOTH, expand=True, padx=0, pady=(2, 2))
 
     # 每一個輸入框都變成root的一個屬性，方面後面取值
+    # 左側人物屬性列表
     root.input_attrs = {}
     for key, val in char_attributes_value.items():
         input = create_sub_character_input(pane_char, key, val)
         root.input_attrs[key] = input
 
+    pane = Frame(pane_char)
+    pane.pack(fill=X, expand=True, padx=10, pady=2)
+
     # 中间武功列表
     pane = Frame(pane_martial)
-    pane.pack(fill=X, expand=True, padx=10, pady=2)
-    label = Label(pane, text=lang.TXT_ATTACK, width=6)
+    pane.pack(side=TOP, fill=BOTH, expand=True, padx=10, pady=2)
+    label = Label(pane, text=lang.TXT_ATTACK, width=14)
     label.pack(side=LEFT, fill=BOTH, expand=True)
     label = Label(pane, text=lang.TXT_LEVEL, width=6)
     label.pack(side=RIGHT, fill=BOTH, expand=True)
@@ -335,16 +441,18 @@ def show_character_window():
     for x in range(0, char_martial_maxcount):
         type = char_martial_type_list[x]
         tier = char_martial_tier_list[x]
-        input = create_sub_martial_input(pane, martial_name_from_type(type), martial_ladder_from_tier(tier))
+        input = create_sub_martial_input(pane, martial_name_from_type(type), martial_ladder_from_tier(tier), type_width=12)
         root.input_martial.append(input)
 
-    # 右侧主角姓名
-    input = create_sub_character_input(pane_char_name, lang.TXT_NAME, char_name_main)
-    root.input_char_name = input
-    pane = Frame(pane_char_name)
-    pane.pack(fill=X, expand=True, padx=0, pady=(0, 2))
+    pane = Frame(pane_martial)
+    pane.pack(fill=X, expand=True, padx=10, pady=2)
 
-    # 右側隊友列表
+    # 中間隊友列表
+    pane = Frame(pane_team)
+    pane.pack(fill=X, expand=True, padx=10, pady=2)
+    label = Label(pane, text=lang.TXT_TEAM, width=6)
+    label.pack(side=TOP, fill=BOTH, expand=True)
+
     pane = Frame(pane_team)
     pane.pack(fill=X, expand=True)
     root.input_team = []
@@ -353,9 +461,34 @@ def show_character_window():
         input = create_sub_team_menu(pane, member)
         root.input_team.append(input)
 
-    # 關於隊友的說明
-    msg = Message(pane_team_desc, text=team_members_desc)
-    msg.pack(side=TOP, fill=BOTH, anchor=W, expand=True)
+    pane = Frame(pane_team)
+    pane.pack(fill=X, expand=True, padx=10, pady=2)
+
+    # 右侧主角姓名
+    pane = Frame(pane_char_setting)
+    pane.pack(fill=X, expand=True, padx=10, pady=2)
+    label = Label(pane, text=lang.TXT_MAIN_DESC, width=16)
+    label.pack(side=TOP, fill=BOTH, expand=True)
+
+    input = create_sub_character_input(pane_char_setting, lang.TXT_NAME, char_name_main, 6, 10)
+    root.input_char_name = input
+    pane = Frame(pane_char_setting)
+    pane.pack(side=TOP, fill=X, expand=True, padx=0, pady=2)
+
+    # 右側主角位置
+    input = create_sub_char_pos_menu(pane_char_setting, lang.TXT_POSITION, char_position, 6, 8)
+    root.input_char_pos = input
+    pane = Frame(pane_char_setting)
+    pane.pack(side=BOTTOM, fill=X, expand=True, padx=0, pady=(0, 2))
+
+    pane = Frame(pane_char_setting)
+    pane.pack(fill=X, expand=True, padx=10, pady=2)
+
+    # 商人位置設定
+    input = create_sub_merc_pos_menu(pane_merchant, lang.TXT_MERC_POSITION, merc_position)
+    root.input_merc_pos = input
+    pane = Frame(pane_merchant)
+    pane.pack(fill=X, expand=True, padx=10, pady=(0, 4))
 
     # 毒性增強設定
     label = Label(pane_venom, text=zdata_venom_divisor_desc)
@@ -363,9 +496,13 @@ def show_character_window():
     input = create_sub_character_input(pane_venom, lang.TXT_VENOM_DIVISOR, zdata_venom_divisor_value)
     root.input_venom_divisor = input
 
+    # 關於隊友的說明
+    msg = Message(pane_team_desc, text=team_members_desc)
+    msg.pack(side=BOTTOM, fill=BOTH, anchor=W, expand=True)
+
     # 下側按鈕
     pane = Frame(root)
-    pane.pack(fill=X, expand=False, padx=10, pady=10)
+    pane.pack(fill=X, expand=False, padx=10, pady=(3, 10))
 
     label_status = StringVar()
     label_status.set(lang.TXT_SAVE_LOADED)
@@ -404,6 +541,14 @@ def main_window_btn_read():
         return
     root.input_save_status.set(err)
 
+    dync_path = root.input_dync_path.get()
+    if not os.path.exists(dync_path):
+        err = lang.ERR_DYNC_NOT_EXIST
+        root.input_dync_status.set(err)
+        logging.error(err)
+        return
+    root.input_dync_status.set(err)
+
     zdata_path = root.input_zdata_path.get()
     if not os.path.exists(zdata_path):
         err = lang.ERR_DATA_NOT_EXIST
@@ -413,7 +558,7 @@ def main_window_btn_read():
     root.input_zdata_status.set(err)
 
     # 保存存檔目錄
-    dump_save_path(save_path, zdata_path)
+    dump_save_path(save_path, dync_path, zdata_path)
     retrieve_character()
 
     # 打開人物窗口
@@ -454,27 +599,38 @@ def create_sub_path_input(parent_pane, desc, text, btn_command):
 # 選擇存檔文件位置
 def main_window_select_save_file():
     global save_file_path
-    path = filedialog.askopenfilename(defaultextension=".grp", multiple=False, title=lang.TITLE_SAVE_PATH_SEL)
+    path = filedialog.askopenfilename(defaultextension=".grp", filetypes=[(lang.TXT_SAVE_PATH, "*.GRP")], multiple=False, title=lang.TITLE_SAVE_PATH_SEL)
     if not path:
         return
     save_file_path = path
     root.input_save_path.delete(0, END)
     root.input_save_path.insert(0, save_file_path)
-    # 保存存檔目錄
-    dump_save_path(save_file_path, zdata_file_path)
+    # 保存
+    dump_save_path(save_file_path, dync_file_path, zdata_file_path)
 
+# 選擇動態數據文件
+def main_window_select_dync_file():
+    global dync_file_path
+    path = filedialog.askopenfilename(defaultextension=".grp", filetypes=[(lang.TXT_DYNC_PATH, "*.GRP")], multiple=False, title=lang.TITLE_DYNC_PATH_SEL)
+    if not path:
+        return
+    dync_file_path = path
+    root.input_dync_path.delete(0, END)
+    root.input_dync_path.insert(0, dync_file_path)
+    # 保存
+    dump_save_path(save_file_path, dync_file_path, zdata_file_path)
 
 # 選擇數據文件位置
 def main_window_select_zdata_file():
     global zdata_file_path
-    path = filedialog.askopenfilename(defaultextension=".dat", multiple=False, title=lang.TITLE_DATA_PATH_SEL)
+    path = filedialog.askopenfilename(defaultextension=".dat", filetypes=[(lang.TXT_DATA_PATH, "*.DAT")], multiple=False, title=lang.TITLE_DATA_PATH_SEL)
     if not path:
         return
     zdata_file_path = path
     root.input_zdata_path.delete(0, END)
     root.input_zdata_path.insert(0, zdata_file_path)
-    # 保存存檔目錄
-    dump_save_path(save_file_path, zdata_file_path)
+    # 保存
+    dump_save_path(save_file_path, dync_file_path, zdata_file_path)
 
 
 # 顯示存檔窗口
@@ -500,6 +656,12 @@ def show_main_window():
     (status, input) = create_sub_path_input(pane, lang.TXT_SAVE_PATH, save_file_path, main_window_select_save_file)
     root.input_save_path = input
     root.input_save_status = status
+
+    # 返回(文件狀態,文件路徑)
+    input: Entry
+    (status, input) = create_sub_path_input(pane, lang.TXT_DYNC_PATH, dync_file_path, main_window_select_dync_file)
+    root.input_dync_path = input
+    root.input_dync_status = status
 
     # 返回(文件狀態,文件路徑)
     (status, input) = create_sub_path_input(pane, lang.TXT_DATA_PATH, zdata_file_path, main_window_select_zdata_file)
@@ -538,10 +700,14 @@ def retrieve_game_data():
     global game_data
     global app_title
     global save_file_path
+    global dync_file_path
     global zdata_file_path
     global char_name_address
     global char_name_maxcount
     global char_home_name_address
+    global char_position_address
+    global map_positions
+    global merchant_positions
     global char_attributes_address
     global martial_arts_names
     global zdata_venom_divisor_address
@@ -557,12 +723,15 @@ def retrieve_game_data():
     global team_members_address_step
     global team_members_desc
 
+    map_positions = {}
+    merchant_positions = {}
     char_attributes_address = {}
     martial_arts_names = {}
     team_members_names = {}
     app_title = ""
     zdata_file_path = ""
     save_file_path = ""
+    dync_file_path = ""
 
     with open("data.json", "r") as f:
         game_data = json.load(f)
@@ -570,14 +739,14 @@ def retrieve_game_data():
             app_title = game_data["app_title"]
         if "save_file_path" in game_data:
             save_file_path = game_data["save_file_path"]
+        if "dync_file_path" in game_data:
+            dync_file_path = game_data["dync_file_path"]
         if "zdata_file_path" in game_data:
             zdata_file_path = game_data["zdata_file_path"]
-        if "char_name_address" in game_data:
-            char_name_address = game_data["char_name_address"]
-        if "char_home_name_address" in game_data:
-            char_home_name_address = game_data["char_home_name_address"]
-        if "char_name_maxcount" in game_data:
-            char_name_maxcount = game_data["char_name_maxcount"]
+        if "map_positions" in game_data:
+            map_positions = game_data["map_positions"]
+        if "merchant_positions" in game_data:
+            merchant_positions = game_data["merchant_positions"]
         if "char_attributes_address" in game_data:
             char_attributes_address = game_data["char_attributes_address"]
         if "martial_arts_names" in game_data:
@@ -601,9 +770,18 @@ def retrieve_game_data():
             else:
                 team_members_names[key] = int(val, 16)
 
+        for key, val in merchant_positions.items():
+            # 第一次加載的是16進製文字，進行了整形轉換，重新寫入data.json
+            # 第二次加載的就是int了，不需要再轉換
+            if isinstance(val, int):
+                merchant_positions[key] = val
+            else:
+                merchant_positions[key] = int(val, 16)
+
         char_name_address = int(game_data["char_name_address"], 16)
         char_name_maxcount = int(game_data["char_name_maxcount"])
         char_home_name_address = int(game_data["char_home_name_address"], 16)
+        char_position_address = int(game_data["char_position_address"], 16)
         char_martial_type_start_address = int(game_data["char_martial_type_start_address"], 16)
         char_martial_type_address_step = int(game_data["char_martial_type_address_step"], 16)
         char_martial_tier_start_address = int(game_data["char_martial_tier_start_address"], 16)
@@ -622,10 +800,11 @@ def retrieve_game_data():
 # 修改data_local.json文件，然後執行python convert_data.py
 # 把data_local.json轉換成data.json unicode化
 # 不要直接改data.json
-def dump_save_path(save_path, zdata_path):
+def dump_save_path(save_path, dync_path, zdata_path):
     # Write data to file
     global game_data
     game_data["save_file_path"] = save_path
+    game_data["dync_file_path"] = dync_path
     game_data["zdata_file_path"] = zdata_path
     with open("data.json", "w") as f:
         # prevent json from transforming chars to unicode
@@ -635,6 +814,7 @@ def dump_save_path(save_path, zdata_path):
 # 讀取人物數據
 def retrieve_character():
     global char_name_main
+    global char_position
     global char_attributes_value
     global char_martial_type_list
     global char_martial_tier_list
@@ -657,6 +837,13 @@ def retrieve_character():
             char_name_main = ""
             logging.debug(f"Error: {e}")
         logging.debug("讀取人物姓名 -> %s" % char_name_main)
+
+        posx = read_file_byte(f, char_position_address, 2)
+        posy = read_file_byte(f, char_position_address+2, 2)
+        char_position.clear()
+        char_position.append(posx)
+        char_position.append(posy)
+        logging.debug("讀取人物位置 -> (%d,%d)" % (posx, posy))
 
         char_attributes_value = {}
         for key, val in char_attributes_address.items():
@@ -690,6 +877,18 @@ def retrieve_character():
                     break
 
     logging.debug("讀取人物數據 完成.")
+
+    logging.debug("讀取動態數據 開始:")
+    global merc_position
+    with open(dync_file_path, mode='rb') as f:
+        for key, val in merchant_positions.items():
+            pos = read_file_byte(f, val, 2)
+            if pos != 0:
+                merc_position = key
+                logging.debug("讀取商人位置 -> %s" % merc_position)
+                break
+
+    logging.debug("讀取動態數據 完成.")
 
     logging.debug("讀取遊戲數據 開始:")
     global zdata_venom_divisor_value
@@ -728,18 +927,24 @@ def fill_with_holder(byte_array, length, holder=0):
     if hl < 0:
         byte_array = byte_array[:length]
     elif hl > 0:
-        byte_array = byte_array + holder.to_bytes(hl, 'big')
+        byte_array = byte_array + holder.to_bytes(hl, 'little') #多餘的地方會填充0x00
+        # 下面方法會把整個數組填滿holder(不按0x00填充)
+        '''
+        b = bytearray(hl)
+        b[:] = [holder] * hl
+        byte_array = byte_array + b
+        '''
     return byte_array
 
 # 從文件中讀取字節(金庸大部分數據都是short)
 def read_file_byte(f, address, count, unsigned=False):
     f.seek(address)
     binary_data = f.read(count)
-    fmt = '<h'  # short
+    fmt = '<H'  # short
     if count == 2:
-        fmt = '<h'
+        fmt = '<H'
     elif count == 4:
-        fmt = '<i'  # integer
+        fmt = '<I'  # integer
     else:
         return 0
     if unsigned:
@@ -757,11 +962,12 @@ def write_file_byte(f, address, count, value, unsigned=False):
     if value < 0:
         return
     f.seek(address)
-    fmt = 'h'  # short
+    # H for unsigned, h for signed
+    fmt = 'H'  # short
     if count == 2:
-        fmt = 'h'
+        fmt = 'H'
     elif count == 4:
-        fmt = 'i'  # integer
+        fmt = 'I'  # integer
     if unsigned:
         fmt = fmt.upper()
     f.write(struct.pack(fmt, value))
@@ -769,7 +975,6 @@ def write_file_byte(f, address, count, value, unsigned=False):
 def write_file_byte_raw(f, address, bytes):
     f.seek(address)
     f.write(bytes)
-
 
 # 重寫人物數據
 def rewrite_character():
@@ -788,11 +993,18 @@ def rewrite_character():
         except UnicodeEncodeError as e:
             bigb = bytes(char_name_maxcount * 2)
             logging.debug(f"Error: {e}")
-        name_b = fill_with_holder(bigb, char_name_maxcount * 2)
-        home_name_b = fill_with_holder(bigb, char_name_maxcount * 2, 0x20)
+        name_b = fill_with_holder(bigb, char_name_maxcount * 2, 0)
+        #home_name_b = fill_with_holder(bigb, char_name_maxcount * 2, 0x20)
+        home_name_b = fill_with_holder(bigb, char_name_maxcount * 2 + 2, 0x7EA9) # 最多3個字，然後"居"字填充
         write_file_byte_raw(f, char_name_address, name_b)
         write_file_byte_raw(f, char_home_name_address, home_name_b)
-        logging.debug("重寫人物姓名 -> %s 家居名 -> %s" % (name_b.decode("big5"), home_name_b.decode("big5")))
+        logging.debug("重寫人物姓名 -> %s 主角居 -> %s" % (name_b.decode("big5"), home_name_b.decode("big5")))
+
+        posx = char_position[0]
+        posy = char_position[1]
+        write_file_byte(f, char_position_address, 2, posx)
+        write_file_byte(f, char_position_address+2, 2, posy)
+        logging.debug("重寫人物位置 -> (%d,%d)" % (posx, posy))
 
         logging.debug("重寫人物屬性")
         for key, val in char_attributes_address.items():
@@ -823,6 +1035,19 @@ def rewrite_character():
 
     logging.debug("重寫人物數據 完成.")
 
+    logging.debug("重寫動態數據 開始:")
+    with open(dync_file_path, 'r+b') as f:
+        logging.debug("清空商人從前位置")
+        for key, val in merchant_positions.items():
+            if key != merc_position:
+                address = val
+                clear_merc_byte(f, address)
+        logging.debug("重寫 -> 商人新位置: %s" % merc_position)
+        address = merchant_positions[merc_position]
+        write_merc_byte(f, address)
+
+    logging.debug("重寫動態數據 完成.")
+
     logging.debug("重寫遊戲數據 開始:")
     with open(zdata_file_path, 'r+b') as f:
         logging.debug("重寫 -> 中毒除數: %d" % zdata_venom_divisor_value)
@@ -830,6 +1055,37 @@ def rewrite_character():
 
     logging.debug("重寫遊戲數據 完成.")
 
+# 清空商人坐標文件位置
+def clear_merc_byte(f, address):
+    write_file_byte(f, address, 2, 0x0000)
+    write_file_byte(f, address + 2, 2, 0x0000)
+    write_file_byte(f, address + 4, 2, 0xFFFF)
+    write_file_byte(f, address + 10, 2, 0xFFFF)
+    write_file_byte(f, address + 12, 2, 0xFFFF)
+    write_file_byte(f, address + 14, 2, 0xFFFF)
+
+# 寫入商人位置
+'''
+xx xx xx xx xxxx (FFFF FFFF) xxxx xxxx xxxx
+xx xx xx xx：
+0100 0100代表小宝人物在，如果是0000，就会穿过人物；人物不在时为0000，不显示人物
+xxxx:
+AA03代表小宝对话事件，改为其他的对话内容会改变，甚至可能变开箱子，比如AA00变成“跟定逸师太战斗”，
+人物不在时为FFFF，无事件
+(FFFF FFFF)间隔不用管，不用设置
+xxxx xxxx xxxx ：4020 4020 4020代表小宝造型，换成其他值，会变成不同图块
+如果不显示小宝，就设置为0000 0000 FFFF (FFFF FFFF) FFFF FFFF FFFF，()中不用设置
+所以，当更改小宝位置时，要把其他4个客栈的小宝位置清空，
+只保留一个0100 0100 AA03 (FFFF FFFF) 4020 4020 4020
+'''
+def write_merc_byte(f, address):
+    # little endian
+    write_file_byte(f, address, 2, 0x0001)
+    write_file_byte(f, address + 2, 2, 0x0001)
+    write_file_byte(f, address + 4, 2, 0x03AA)
+    write_file_byte(f, address + 10, 2, 0x2040)
+    write_file_byte(f, address + 12, 2, 0x2040)
+    write_file_byte(f, address + 14, 2, 0x2040)
 
 # 全局主函數
 if __name__ == '__main__':

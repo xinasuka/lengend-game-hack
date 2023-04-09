@@ -22,6 +22,23 @@ with open("data_local.json", "r") as f:
         #print("%s: %d %d" % (key, x, y))
         map_positions[key] = (x, y)
 
+    # 重写战斗事件
+    battle_events = game_data["battle_events"]
+    for battle in battle_events:
+        check = battle["check"]
+        overlays = battle["overlays"]
+        for overlay in overlays:
+            # 重写overlay的值
+            for key, val in overlay.items():
+                val = val.replace(" ","").replace("\n","")
+                overlay[key] = val
+
+        # 重写check的值
+        pos = check["pos"]
+        check["pos"] = int(pos, 16)
+        val = check["val"]
+        val = val.replace(" ", "").replace("\n", "")
+        check["val"] = val
 
 with open("data.json", "w") as f:
     json.dump(game_data, f, ensure_ascii=True)

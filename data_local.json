@@ -302,5 +302,367 @@
   "team_members_start_address": "0x18",
   "team_members_address_step": "0x02",
   "team_members_maxcount": "6",
-  "team_members_desc": "主角姓名顯示最多3個字。\n如果隊列第一位不為主角，\n戰鬥中主角也會強製出場。\n只要隊列中設置了無，\n那後面的隊友都不再顯示。\n已經加入隊友如果設置無，\n那這名隊友就消失了，\n跟選擇離隊不一樣。\n如果加入不可加入的隊友，\n選擇讓其離隊會失敗。\n若加入多位同名隊友，\n當與這名NPC隊友對戰時，\n會同時出現，數據也共享。"
+  "team_members_desc": "主角姓名顯示最多3個字。\n如果隊列第一位不為主角，\n戰鬥中主角也會強製出場。\n只要隊列中設置了無，\n那後面的隊友都不再顯示。\n已經加入隊友如果設置無，\n那這名隊友就消失了，\n跟選擇離隊不一樣。\n如果加入不可加入的隊友，\n選擇讓其離隊會失敗。\n若加入多位同名隊友，\n當與這名NPC隊友對戰時，\n會同時出現，數據也共享。",
+  "battle_events_desc" : "正常遊戲中開啟事件後，才可以戰鬥，戰鬥後，如果想再次戰鬥，可以重置戰鬥事件。\n戰鬥重置用於重複進行挑戰的情形，尤其是一些大場面戰鬥，如多次挑戰黑木崖、光明頂等。\n如果遊戲流程中需要的條件還沒有達成，不要重置戰鬥事件。",
+  "battle_events" : [
+    {
+      "title": "蜘蛛山洞 盤絲洞里別樣洞天",
+      "description": "正是妖仙寻隐处，更无邻舍独成家",
+      "overlays": [
+        {"0xAC82": "78 01"},
+        {"0xAC98": "78 01"},
+        {"0xACAE": "78 01"},
+        {"0xAC22": "01 00 03 00 FF FF FF FF FF FF 9C 14 9C 14 9C 14\n00 00 2A 00 20 00 01 00 04 00 FF FF FF FF FF FF\nA0 14 A0 14 A0 14 00 00 2A 00 22 00 01 00 05 00\nFF FF FF FF FF FF 9E 14 9E 14 9E 14 00 00 27 00\n1E 00 01 00 06 00 FF FF FF FF FF FF 9C 14 9C 14\n9C 14"},
+        {"0xAD1C": "79 01"},
+        {"0xAD32": "79 01"},
+        {"0xAD48": "79 01"},
+        {"0xACBC": "01 00 0A 00 FF FF FF FF FF FF 9E 14 9E 14 9E 14\n00 00 1A 00 1B 00 01 00 0B 00 FF FF FF FF FF FF\n9E 14 9E 14 9E 14 00 00 1B 00 1A 00 01 00 0C 00\nFF FF FF FF FF FF A2 14 A2 14 A2 14 00 00 1D 00\n1B 00 01 00 0D 00 FF FF FF FF FF FF 9C 14 9C 14\n9C 14"},
+        {"0xAE3A": "7A 01"},
+        {"0xAE50": "7A 01"},
+        {"0xAE66": "7A 01"},
+        {"0xAE7C": "7A 01"},
+        {"0xAE92": "7A 01"},
+        {"0xAE1C": "01 00 1A 00 FF FF FF FF FF FF A2 14 A2 14 A2 14"},
+        {"0xAD56": "01 00 11 00 FF FF FF FF FF FF 9C 14 9C 14 9C 14\n00 00 0E 00 16 00 01 00 12 00 FF FF FF FF FF FF\n9E 14 9E 14 9E 14 00 00 10 00 17 00 01 00 13 00\nFF FF FF FF FF FF A2 14 A2 14 A2 14 00 00 0F 00\n14 00 01 00 14 00 FF FF FF FF FF FF 9E 14 9E 14\n9E 14 00 00 11 00 15 00 01 00 15 00 FF FF FF FF\nFF FF 9C 14 9C 14 9C 14 00 00 11 00 13 00 01 00\n16 00 FF FF FF FF FF FF A0 14 A0 14 A0 14 00 00\n12 00 17 00 01 00 17 00 FF FF FF FF FF FF 9C 14\n9C 14 9C 14 00 00 13 00 15 00 01 00 18 00 FF FF\nFF FF FF FF 9E 14 9E 14 9E 14"},
+        {"0xAF6E": "7C 01"},
+        {"0xAEF8": "01 00 24 00 FF FF FF FF FF FF 9C 14 9C 14 9C 14\n00 00 0D 00 27 00 01 00 25 00 FF FF FF FF FF FF\n9E 14 9E 14 9E 14 00 00 0E 00 28 00 01 00 26 00\nFF FF FF FF FF FF A2 14 A2 14 A2 14 00 00 10 00\n28 00 01 00 27 00 FF FF FF FF FF FF 9E 14 9E 14\n9E 14 00 00 11 00 29 00 01 00 28 00 FF FF FF FF\nFF FF 9E 14 9E 14 9E 14 "},
+        {"0xAF84": "7B 01"},
+        {"0xAEA0": "01 00 20 00 FF FF FF FF FF FF 9C 14 9C 14 9C 14\n00 00 1F 00 10 00 01 00 21 00 FF FF FF FF FF FF\n9C 14 9C 14 9C 14 00 00 1F 00 12 00 01 00 22 00\nFF FF FF FF FF FF A0 14 A0 14 A0 14 00 00 1E 00\n13 00 01 00 23 00 FF FF FF FF FF FF A2 14 A2 14\nA2 14 00 00 1F 00 14 00"}
+      ],
+      "check": {
+        "pos": "0xAE3A",
+        "val": "7A 01"
+      }
+    },
+    {
+      "title": "楊過山洞 神雕戰大蛇",
+      "description": "誰說蛇膽只有一個",
+      "overlays": [
+        {"0x786E": "86 01"},
+        {"0x7884": "86 01"},
+        {"0x789A": "86 01"},
+        {"0x78AA": "04 00 FF FF FF FF FF FF 34 18 38 18 34 18 00 00\n18 00 24 00 01 00 05 00 FF FF FF FF FF FF 42 18\n4E 18 42 18 00 00 19 00"}
+      ],
+      "check": {
+        "pos": "0x786E",
+        "val": "86 01"
+      }
+    },
+    {
+      "title": "苗人鳳居 再戰金面佛",
+      "description": "胡苗終極對決，最後鹿死誰手",
+      "overlays": [
+        {"0x19D34": "21 00"}
+      ],
+      "check": {
+        "pos": "0x19D34",
+        "val": "21 00"
+      }
+    },
+    {
+      "title": "闖王寶藏 戰雪怪兄弟連",
+      "description": "寶藏只能取一次，雪怪人丁興旺兒孫滿堂",
+      "overlays": [
+        {"0x55F8": "31 00"},
+        {"0x5610": "8A 14 8A 14 8A 14"},
+        {"0x5626": "8C 14 8C 14 8C 14"},
+        {"0x567C": "32 00"},
+        {"0x563C": "8A 14 8A 14 8A 14"},
+        {"0x5652": "8E 14 8E 14 8E 14"},
+        {"0x5668": "8A 14 8A 14 8A 14"}
+      ],
+      "check": {
+        "pos": "0x567C",
+        "val": "32 00"
+      }
+    },
+    {
+      "title": "明教分舵 火焰噴射器",
+      "description": "誤打誤撞救光明左使，陰錯陽差退霹靂手成昆",
+      "overlays": [
+        {"0xCE40": "01 00 00 00 4C 00 FF FF FF FF DC 14 DC 14 DC 14"},
+        {"0xCE98": "01 00 04 00 4E 00 FF FF FF FF B6 14 B6 14 B6 14\n00 00 15 00 1E 00 01 00 05 00 4E 00 FF FF FF FF\nB6 14 B6 14 B6 14 00 00 17 00 1E 00 01 00 06 00\n4E 00 FF FF FF FF B6 14 B6 14 B6 14 00 00 19 00\n1E 00 01 00 07 00 4E 00 FF FF FF FF B8 14 B8 14\nB8 14 00 00 15 00 22 00 01 00 08 00 4E 00 FF FF\nFF FF B8 14 B8 14 B8 14 00 00 17 00 22 00 01 00\n09 00 4E 00 FF FF FF FF B8 14 B8 14 B8 14"}
+      ],
+      "check": {
+        "pos": "0xCE44",
+        "val": "4C 00"
+      }
+    },
+    {
+      "title": "梅莊 戰麻將四傻",
+      "description": "琴棋書畫，春夏秋冬，梅蘭菊竹，東西南北",
+      "overlays": [
+        {"0x3B192": "01 00 03 00 F7 00 FF FF FF FF 76 16 84 16 76 16"},
+        {"0x3B1C0": "05 00 FF FF FF FF FF FF 86 16 86 16 86 16"},
+        {"0x3B1D6": "06 00 FB 00 FF FF FF FF 88 16 96 16 88 16"},
+        {"0x3B21A": "FE 00"},
+        {"0x3B216": "01 00 09 00 FE 00 FF FF FF FF AE 17 AE 17 AE 17\n00 00 0D 00 21 00 01 00 01 00 FE 00 FF FF FF FF\nA6 17 A6 17 A6 17 00 00 0D 00 22 00 01 00 01 00\nFE 00 FF FF FF FF A2 17 A2 17 A2 17"},
+        {"0x3B272": "03 01"},
+        {"0x3B2B0": "01 00 01 00 FF FF FF FF FF FF B0 17 B0 17 B0 17\n00 00 28 00 1F 00 01 00 01 00 FF FF FF FF FF FF\nAC 17 AC 17 AC 17 00 00 29 00 22 00 01 00 01 00\nFF FF FF FF FF FF 9E 17 9E 17 9E 17"}
+      ],
+      "check": {
+        "pos": "0x3B272",
+        "val": "03 01"
+      }
+    },
+    {
+      "title": "黑木崖 譏諷陰陽人",
+      "description": "東方不敗，文成武德，千秋萬載，一統江湖",
+      "overlays": [
+        {"0x1BEE2": "00 00 FF FF FF FF FF FF 58 16 58 16 58 16"},
+        {"0x1BEFA": "FF FF FF FF FF FF 56 16 56 16 56 16"},
+        {"0x1C2D6": "2E 00 FF FF FF FF 40 01"},
+        {"0x1C2EC": "2F 00 FF FF FF FF 40 01"},
+        {"0x1C302": "30 00 FF FF FF FF 40 01"},
+        {"0x1C318": "31 00 FF FF FF FF 40 01"},
+        {"0x1C32E": "32 00 FF FF FF FF 40 01"},
+        {"0x1C344": "33 00 FF FF FF FF 40 01"},
+        {"0x1C35A": "34 00 FF FF FF FF 40 01"},
+        {"0x1C370": "35 00 FF FF FF FF 40 01"},
+        {"0x1C386": "36 00 FF FF FF FF 40 01"}
+      ],
+      "check": {
+        "pos": "0x1BEE2",
+        "val": "00 00"
+      }
+    },
+    {
+      "title": "黑木崖 奪葵花寶典",
+      "description": "欲練神功，引刀自宮",
+      "overlays": [
+        {"0x1BEE4": "41 01"},
+        {"0x1BEFA": "41 01"}
+      ],
+      "check": {
+        "pos": "0x1BEE4",
+        "val": "41 01"
+      }
+    },
+    {
+      "title": "丐幫 棒打要饭的",
+      "description": "全國都已經脫貧了，還敢要飯",
+      "overlays": [
+        {"0x36CFE": "01 00 05 00 0B 02 FF FF FF FF 86 18 86 18 86 18"},
+        {"0x36C90": "01 00 00 00 0B 02 FF FF FF FF 82 18 82 18 82 18\n00 00 29 00 1D 00 01 00 01 00 0B 02 FF FF FF FF\n88 18 88 18 88 18"}
+      ],
+      "check": {
+        "pos": "0x36D02",
+        "val": "0B 02"
+      }
+    },
+    {
+      "title": "丐幫 驱逐契丹狗",
+      "description": "都是中華子孫，不要影響民族團結",
+      "overlays": [
+        {"0x36DC8": "10 02"}
+      ],
+      "check": {
+        "pos": "0x36DC8",
+        "val": "10 02"
+      }
+    },
+    {
+      "title": "青城派(复仇前) 屠狗熊野豬",
+      "description": "青城四兽，屁股向后",
+      "overlays": [
+        {"0x26B1C": "27 01"}
+      ],
+      "check": {
+        "pos": "0x26B1C",
+        "val": "27 01"
+      }
+    },
+    {
+      "title": "恒山派(并派前) 尼姑还俗",
+      "description": "一見尼姑，逢賭必輸",
+      "overlays": [
+        {"0x214D4": "AA 00"}
+      ],
+      "check": {
+        "pos": "0x214D4",
+        "val": "AA 00"
+      }
+    },
+    {
+      "title": "泰山派(并派前) 天门拜服",
+      "description": "我看牛鼻子拜我為師更合適",
+      "overlays": [
+        {"0x1F28A": "B0 00"}
+      ],
+      "check": {
+        "pos": "0x1F28A",
+        "val": "B0 00"
+      }
+    },
+    {
+      "title": "衡山派(并派前) 莫大叩首",
+      "description": "高山流水遇知音，笑傲江湖成絕響",
+      "overlays": [
+        {"0x3E5C0": "BE 00"}
+      ],
+      "check": {
+        "pos": "0x3E5C0",
+        "val": "BE 00"
+      }
+    },
+    {
+      "title": "嵩山派(并派中) 活动开始",
+      "description": "好狗不擋道，這並派大會，怎能少了小爺",
+      "overlays": [
+        {"0x1D018": "CA 00"},
+        {"0x1D026": "01 00 01 00 CB 00 FF FF FF FF 52 14 52 14 52 14"}
+      ],
+      "check": {
+        "pos": "0x1D018",
+        "val": "CA 00"
+      }
+    },
+    {
+      "title": "嵩山派(并派中) 爭五嶽盟主",
+      "description": "五嶽劍派，同氣連枝，五嶽盟主，位望尊崇",
+      "overlays": [
+        {"0x1D018": "D7 00"},
+        {"0x1D026": "00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF"},
+        {"0x1D13C": "0C 16 02 00 30 00 0B 00 01 00 01 00 CD 00 FF FF\nFF FF 56 14 56 14 56 14 00 00 2D 00 1E 00 01 00\n01 00 CD 00 FF FF FF FF 56 14 56 14 56 14 00 00\n2C 00 1E 00 01 00 01 00 CD 00 FF FF FF FF 56 14\n56 14 56 14 00 00 2B 00 1E 00 01 00 01 00 CD 00\nFF FF FF FF 56 14 56 14 56 14 00 00 2A 00 1E 00\n01 00 01 00 CD 00 FF FF FF FF 54 14 54 14 54 14\n00 00 2E 00 1B 00 01 00 01 00 CD 00 FF FF FF FF\n54 14 54 14 54 14 00 00 2D 00 1B 00 01 00 01 00\nCD 00 FF FF FF FF 54 14 54 14 54 14 00 00 2C 00\n1B 00 01 00 01 00 CD 00 FF FF FF FF 54 14 54 14\n54 14 00 00 2B 00 1B 00 01 00 01 00 CD 00 FF FF\nFF FF 54 14 54 14 54 14 00 00 2A 00 1B 00 01 00\n01 00 CD 00 FF FF FF FF 54 14 54 14 54 14 00 00\n2F 00 1B 00 01 00 01 00 FF FF FF FF FF FF 6E 14\n6E 14 6E 14 00 00 22 00 1E 00 01 00 01 00 FF FF\nFF FF FF FF 70 14 70 14 70 14 00 00 24 00 1E 00\n01 00 01 00 FF FF FF FF FF FF 6A 14 6A 14 6A 14\n00 00 22 00 1B 00 01 00 01 00 FF FF FF FF FF FF\n6C 14 6C 14 6C 14 00 00 24 00 1B 00 01 00 01 00\nFF FF FF FF FF FF 72 14 72 14 72 14 00 00 20 00\n1C 00 01 00 01 00 FF FF FF FF FF FF 52 14 52 14\n52 14 00 00 1E 00 1D 00 01 00 01 00 FF FF FF FF\nFF FF 52 14 52 14 52 14 00 00 1E 00 1C 00 01 00\n01 00 FF FF FF FF FF FF 52 14 52 14 52 14 00 00\n1E 00 1B 00 01 00 01 00 FF FF FF FF FF FF 52 14\n52 14 52 14 00 00 1D 00 1D 00 01 00 01 00 FF FF\nFF FF FF FF 52 14 52 14 52 14 00 00 1D 00 1C 00\n01 00 01 00 FF FF FF FF FF FF 52 14 52 14 52 14\n00 00 1D 00 1B 00 01 00 01 00 FF FF FF FF FF FF\n46 14 46 14 46 14 00 00 22 00 20 00 01 00 01 00\nFF FF FF FF FF FF 46 14 46 14 46 14 00 00 22 00\n21 00 01 00 01 00 FF FF FF FF FF FF 46 14 46 14\n46 14 00 00 22 00 22 00 01 00 01 00 FF FF FF FF\nFF FF 46 14 46 14 46 14 00 00 22 00 23 00 01 00\n01 00 FF FF FF FF FF FF 4E 14 4E 14 4E 14 00 00\n24 00 20 00 01 00 01 00 FF FF FF FF FF FF 4E 14\n4E 14 4E 14 00 00 24 00 21 00 01 00 01 00 FF FF\nFF FF FF FF 4E 14 4E 14 4E 14 00 00 24 00 22 00\n01 00 01 00 FF FF FF FF FF FF 4E 14 4E 14 4E 14\n00 00 24 00 23 00 01 00 01 00 FF FF FF FF FF FF\n3C 14 3C 14 3C 14 00 00 22 00 19 00 01 00 01 00\nFF FF FF FF FF FF 3C 14 3C 14 3C 14 00 00 22 00\n18 00 01 00 01 00 FF FF FF FF FF FF 3C 14 3C 14\n3C 14 00 00 22 00 17 00 01 00 01 00 FF FF FF FF\nFF FF 3C 14 3C 14 3C 14 00 00 22 00 16 00 01 00\n01 00 FF FF FF FF FF FF 34 14 34 14 34 14 00 00\n24 00 19 00 01 00 01 00 FF FF FF FF FF FF 34 14\n34 14 34 14 00 00 24 00 18 00 01 00 01 00 FF FF\nFF FF FF FF 34 14 34 14 34 14 00 00 24 00 17 00\n01 00 01 00 FF FF FF FF FF FF 34 14 34 14 34 14\n00 00 24 00 16 00 01 00 33"}
+      ],
+      "check": {
+        "pos": "0x1D018",
+        "val": "D7 00"
+      }
+    },
+    {
+      "title": "金輪寺 為美再奪可蘭經",
+      "description": "翠羽黃杉，金輪老賊，一美一禿，高下立判",
+      "overlays": [
+        {"0x11346": "77 02"}
+      ],
+      "check": {
+        "pos": "0x11346",
+        "val": "77 02"
+      }
+    },
+    {
+      "title": "鐵掌幫 鐵掌水下沉",
+      "description": "讓老爺子今年也不敢來華山論劍",
+      "overlays": [
+        {"0x33904": "C2 01"}
+      ],
+      "check": {
+        "pos": "0x33904",
+        "val": "C2 01"
+      }
+    },
+    {
+      "title": "凌霄城 單挑白萬劍",
+      "description": "你那叫隱藏實力，讓爾等看看啥叫隱藏實力",
+      "overlays": [
+        {"0x29F5A": "0C 00"},
+        {"0x29F60": "57 01"},
+        {"0x29F70": "0D 00"},
+        {"0x29F76": "58 01"},
+        {"0x29F2C": "01 00 0A 00 FF FF FF FF FF FF 18 14 18 14 18 14\n00 00 1C 00 12 00 01 00 0B 00 FF FF FF FF FF FF\n1E 14 1E 14 1E 14 00 00"}
+      ],
+      "check": {
+        "pos": "0x29F5A",
+        "val": "0C 00"
+      }
+    },
+    {
+      "title": "星宿海 戰老仙",
+      "description": "星宿老仙，法力無邊，失去王鼎，急的冒煙",
+      "overlays": [
+        {"0x25992": "00 00 22 02 FF FF FF FF DA 18 DA 18 DA 18 00 00\n27 00 18 00 01 00 01 00 FF FF FF FF FF FF D8 18\nD8 18 D8 18 00 00 26 00 18 00 01 00 02 00 FF FF\nFF FF FF FF DC 18 DC 18 DC 18"},
+        {"0x25994": "22 02"}
+      ],
+      "check": {
+        "pos": "0x25994",
+        "val": "22 02"
+      }
+    },
+    {
+      "title": "神龍教 捅破一統千秋夢",
+      "description": "教主與夫人，福如東海，壽與天齊",
+      "overlays": [
+        {"0x4C496": "63 02"}
+      ],
+      "check": {
+        "pos": "0x4C496",
+        "val": "63 02"
+      }
+    },
+    {
+      "title": "桃花島 夫目前娶黃蓉",
+      "description": "俠之大者，為國為民，我等草民，只為春色",
+      "overlays": [
+        {"0x5092A": "D5 01"}
+      ],
+      "check": {
+        "pos": "0x5092A",
+        "val": "D5 01"
+      }
+    },
+    {
+      "title": "一燈居 了卻孽緣戰一陽指",
+      "description": "你讓我殺你，結果你狂吃藥還反擊，這人做的",
+      "overlays": [
+        {"0x327D4": "AB 01"},
+        {"0x327DA": "06 18 06 18 06 18"}
+      ],
+      "check": {
+        "pos": "0x327D4",
+        "val": "AB 01"
+      }
+    },
+    {
+      "title": "重陽宮 戰丘處機",
+      "description": "小爺就不怕結梁子，叫王重陽出來",
+      "overlays": [
+        {"0x14694": "C9 01"}
+      ],
+      "check": {
+        "pos": "0x14694",
+        "val": "C9 01"
+      }
+    },
+    {
+      "title": "天寧寺 奪連城訣",
+      "description": "都給小爺閃開，在場的各位都是垃圾",
+      "overlays": [
+        {"0x43C4E": "5E 02"},
+        {"0x43AE6": "01 00 01 00 FF FF FF FF FF FF 70 1A 70 1A 70 1A\n00 00 13 00 29 00 01 00 01 00 FF FF FF FF FF FF\n70 1A 70 1A 70 1A 00 00 11 00 28 00 01 00 01 00\nFF FF FF FF FF FF 6E 1A 6E 1A 6E 1A 00 00 16 00\n28 00 01 00 01 00 FF FF FF FF FF FF 6E 1A 6E 1A\n6E 1A 00 00 16 00 2A 00 01 00 01 00 FF FF FF FF\nFF FF 72 1A 72 1A 72 1A 00 00 11 00 25 00 01 00\n01 00 FF FF FF FF FF FF 72 1A 72 1A 72 1A 00 00\n10 00 26 00 01 00 01 00 FF FF FF FF FF FF 74 1A\n74 1A 74 1A 00 00 13 00 25 00 01 00 01 00 FF FF\nFF FF FF FF 74 1A 74 1A 74 1A 00 00 15 00 26 00\n01 00 01 00 FF FF FF FF FF FF 7C 1A 7C 1A 7C 1A\n00 00 11 00 23 00 01 00 01 00 FF FF FF FF FF FF\n7C 1A 7C 1A 7C 1A 00 00 14 00 23 00 01 00 01 00\nFF FF FF FF FF FF 7C 1A 7C 1A 7C 1A 00 00 17 00\n25 00 01 00 01 00 FF FF FF FF FF FF 66 14 66 14\n66 14 00 00 11 00 2B 00 01 00 01 00 FF FF FF FF\nFF FF 66 14 66 14 66 14 00 00 14 00 2C 00 01 00\n01 00 FF FF FF FF FF FF 66 14 66 14 66 14 00 00\n16 00 2C 00 01 00 01 00 FF FF FF FF FF FF 66 14\n66 14 66 14 00 00 19 00 2A 00 01 00 01 00 FF FF\nFF FF FF FF 7A 1A 7A 1A 7A 1A"}
+      ],
+      "check": {
+        "pos": "0x43C4E",
+        "val": "5E 02"
+      }
+    },
+    {
+      "title": "萬鱷島 教小徒弟做人",
+      "description": "四大惡人排行第三，屠鱷魚，享經驗值盛宴",
+      "overlays": [
+        {"0x52B88": "01 00 FF FF FF FF 37 02"},
+        {"0x52B9E": "02 00 FF FF FF FF 47 02"},
+        {"0x52BB4": "03 00 FF FF FF FF 48 02"},
+        {"0x52BCA": "04 00 FF FF FF FF 49 02"},
+        {"0x52BE0": "05 00 FF FF FF FF 4A 02"},
+        {"0x52BF6": "06 00 FF FF FF FF 4B 02"},
+        {"0x52B74": "38 02 FF FF FF FF 0E 19 0E 19 0E 19"}
+      ],
+      "check": {
+        "pos": "0x52B74",
+        "val": "38 02"
+      }
+    },
+    {
+      "title": "五毒教 調戲藍鳳凰",
+      "description": "色字頭上一把刀，我願為色兩肋插刀",
+      "overlays": [
+        {"0x27C62": "68 02"}
+      ],
+      "check": {
+        "pos": "0x27C62",
+        "val": "68 02"
+      }
+    }
+  ]
 }

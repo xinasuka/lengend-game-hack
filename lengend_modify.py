@@ -4,12 +4,14 @@ import json
 import struct
 import logging
 import threading
+import multiprocessing
 import binascii
+#import atexit
 from tkinter import *
 from tkinter import messagebox, Entry
 from tkinter import filedialog
 from typing import Dict, Any
-
+#from pathlib import Path
 from playsound import playsound
 
 # 日誌等級
@@ -17,7 +19,6 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(mes
 
 # 全局遊戲數據
 game_data = {}
-app_title=""
 # 存檔文件位置(R1存檔1, R2存檔2, R3存檔3)
 save_file_path = ""
 # 動態數據文件位置(D1存檔1, D2存檔2, D3存檔3)
@@ -78,6 +79,9 @@ team_members_desc = ""
 battle_events = []
 battle_events_desc = ""
 
+# 音樂進程
+p_music = None
+
 # 主窗口
 root = None
 
@@ -109,9 +113,14 @@ def martial_type_from_name(name):
 
 # 主函數，不用在乎函數定義順序
 def main_entry_point():
+    # atexit.register(on_exit)
+
+    #changes the default process start method to 'spawn' instead of 'fork' on macOS.
+    multiprocessing.set_start_method('spawn')
     play_sound()
+
     # 取得上回存檔位置
-    retrieve_game_data()
+    retrieve_path_data()
     show_main_window()
 
 
@@ -480,11 +489,11 @@ def show_battle_window():
 
     # 事件面板
     pane_battle = LabelFrame(pane, text=lang.TXT_BATTLE_LST)
-    pane_battle.pack(side=TOP, fill=BOTH, expand=True, padx=10, pady=4)
+    pane_battle.pack(side=LEFT, fill=BOTH, expand=True, padx=(10,2), pady=(4,8))
 
-    # 方法說明
-    pane_battle_desc = LabelFrame(pane, text=lang.TXT_BATTLE_DESC)
-    pane_battle_desc.pack(side=BOTTOM, fill=BOTH, expand=True, padx=10, pady=(2, 10))
+    # 方法說明與按鈕
+    pane_battle_ctrl = Frame(pane)
+    pane_battle_ctrl.pack(side=RIGHT, fill=Y, expand=True, padx=(2, 10), pady=(4,8))
 
     # 標題欄
     pane_heading = Frame(pane_battle)
@@ -506,26 +515,28 @@ def show_battle_window():
     pane.pack(fill=X, expand=True, padx=10, pady=2)
 
     # 關於戰鬥事件的說明
-    msg = Label(pane_battle_desc, text=battle_events_desc)
-    msg.pack(side=TOP, fill=BOTH, expand=True, padx=10, pady=5)
+    pane_battle_desc = LabelFrame(pane_battle_ctrl, text=lang.TXT_BATTLE_DESC)
+    pane_battle_desc.pack(side=TOP, expand=False)
+    msg = Message(pane_battle_desc, text=battle_events_desc)
+    msg.pack(side=TOP, fill=X, expand=False, padx=5, pady=5)
 
     # 下側按鈕
-    pane = Frame(root)
-    pane.pack(fill=X, expand=False, padx=10, pady=(2, 8))
+    pane = Frame(pane_battle_ctrl)
+    pane.pack(side=TOP, fill=X, expand=False, padx=10, pady=(5, 8))
 
     label_status = StringVar()
     label_status.set(lang.TXT_SAVE_LOADED)
     label = Label(pane, textvariable=label_status)
-    label.pack(side=LEFT, fill=BOTH, expand=True)
+    label.pack(side=TOP, fill=X, expand=False, padx=5, pady=10)
     root.label_status = label_status
 
     # 返回，写入，刷新
     btn = Button(pane, text=lang.BTN_RETURN, command=battle_window_btn_close)
-    btn.pack(side=RIGHT, fill=BOTH, expand=True, padx=4)
+    btn.pack(side=TOP, fill=BOTH, expand=True, padx=10, pady=5)
     btn = Button(pane, text=lang.BTN_RESET, command=battle_window_btn_reset)
-    btn.pack(side=RIGHT, fill=BOTH, expand=True, padx=4)
+    btn.pack(side=TOP, fill=BOTH, expand=True, padx=10, pady=5)
     btn = Button(pane, text=lang.BTN_REFRESH, command=battle_window_btn_refresh)
-    btn.pack(side=RIGHT, fill=BOTH, expand=True, padx=4)
+    btn.pack(side=TOP, fill=BOTH, expand=True, padx=10, pady=5)
 
     root.update_idletasks()  # Update "requested size" from geometry manager
     root.geometry("+%d+%d" % ((root.winfo_screenwidth() - root.winfo_reqwidth()) / 2,
@@ -690,9 +701,16 @@ def show_character_window():
                               (root.winfo_screenheight() - root.winfo_reqheight()) / 2))
     root.mainloop()
 
+# 退出程序
+def on_exit():
+    # 必須停止音樂(因為有子進程)
+    stop_sound()
+    # 關閉窗口
+    main_window_btn_close()
 
 # 關閉主窗口
 def main_window_btn_close():
+    # 不主動停止音樂
     global root
     root.destroy()
 
@@ -704,7 +722,7 @@ def save_all_paths():
         err = lang.ERR_SAVE_NOT_EXIST
         root.input_save_status.set(err)
         logging.error(err)
-        return
+        return False
     root.input_save_status.set(err)
 
     dync_path = root.input_dync_path.get()
@@ -712,7 +730,7 @@ def save_all_paths():
         err = lang.ERR_DYNC_NOT_EXIST
         root.input_dync_status.set(err)
         logging.error(err)
-        return
+        return False
     root.input_dync_status.set(err)
 
     zdata_path = root.input_zdata_path.get()
@@ -720,15 +738,21 @@ def save_all_paths():
         err = lang.ERR_DATA_NOT_EXIST
         root.input_zdata_status.set(err)
         logging.error(err)
-        return
+        return False
     root.input_zdata_status.set(err)
 
     dump_save_path(save_path, dync_path, zdata_path)
+    return True
 
 # 修改戰鬥事件
 def main_window_btn_mod_battle():
     # 保存全部文件路徑
-    save_all_paths()
+    save = save_all_paths()
+    if not save:
+        return
+
+    # 取得遊戲信息
+    retrieve_game_data()
 
     # 取得戰鬥事件信息
     retrieve_battle()
@@ -740,7 +764,12 @@ def main_window_btn_mod_battle():
 # 修改人物相關
 def main_window_btn_mod_char():
     # 保存全部文件路徑
-    save_all_paths()
+    save = save_all_paths()
+    if not save:
+        return
+
+    # 取得遊戲信息
+    retrieve_game_data()
 
     # 取得人物信息
     retrieve_character()
@@ -753,7 +782,7 @@ def main_window_btn_mod_char():
 # 生成通用單個屬性輸入框
 def create_sub_path_input(parent_pane, desc, text, btn_command):
     pane = Frame(parent_pane)
-    pane.pack(fill=X, expand=True, padx=10, pady=2)
+    pane.pack(fill=X, expand=True, padx=(5,0), pady=2)
 
     pane_info = Frame(pane)
     pane_info.pack(side=TOP, fill=X, expand=True)
@@ -773,9 +802,10 @@ def create_sub_path_input(parent_pane, desc, text, btn_command):
     input = Entry(pane)
     input.pack(side=LEFT, fill=BOTH, expand=True)
     input.insert(0, text)
+    #input.config(state="disabled")
 
     btn = Button(pane, text=lang.BTN_SELECT, width=8, command=btn_command)
-    btn.pack(side=RIGHT, fill=X, expand=False, padx=4)
+    btn.pack(side=RIGHT, fill=X, expand=False, padx=(8))
 
     return label_status, input
 
@@ -821,7 +851,7 @@ def main_window_select_zdata_file():
 def show_main_window():
     global root
     root = Tk()
-    root.title(app_title)
+    root.title(lang.TITLE_APP)
 
     '''
     root.minsize(width=400, height=0) 
@@ -853,11 +883,17 @@ def show_main_window():
     root.input_zdata_status = status
 
     pane = Frame(root)
-    pane.pack(fill=X, expand=True, padx=5, pady=(5, 10))
+    pane.pack(fill=X, expand=True, padx=5, pady=(5, 5))
 
-    label = Label(pane, text="© 2022-2023 Charles Liu.")
-    label.pack(side=LEFT, anchor=NW, expand=False, padx=(10, 2))
+    # 音樂標籤
+    music = IntVar(root)
+    music.set(1)
+    chk_music = Checkbutton(pane, text=lang.TXT_PLAY_MUSIC, variable=music,
+                            command=lambda: check_play_sound())
+    chk_music.pack(side=LEFT, anchor=NW, expand=False, padx=(5, 2))
+    root.music_status = music
 
+    # 下方按鈕
     pane = Frame(pane)
     pane.pack(side=RIGHT, fill=X, expand=False, padx=10)
 
@@ -867,25 +903,70 @@ def show_main_window():
     btn = Button(pane, text=lang.BTN_MOD_CHAR, width=8, command=main_window_btn_mod_char)
     btn.pack(side=LEFT, fill=BOTH, expand=True, padx=4)
 
-    btn = Button(pane, text=lang.BTN_CLOSE, width=8, command=main_window_btn_close)
+    btn = Button(pane, text=lang.BTN_CLOSE, width=8, command=on_exit)
     btn.pack(side=RIGHT, fill=BOTH, expand=True, padx=4)
 
+    # 版權
+    label = Label(root, text=lang.TXT_COPYRIGHT)
+    label.pack(side=TOP, fill=BOTH, expand=True, padx=10, pady=(0,5))
+
+    root.protocol("WM_DELETE_WINDOW", on_exit)
     root.update_idletasks()  # Update "requested size" from geometry manager
     root.geometry("+%d+%d" % ((root.winfo_screenwidth() - root.winfo_reqwidth()) / 2,
                               (root.winfo_screenheight() - root.winfo_reqheight()) / 2))
     root.mainloop()
 
+# 播放音樂按鈕事件
+def check_play_sound():
+    status = root.music_status.get()
+    if status:
+        play_sound()
+    else:
+        stop_sound()
 
 # 播放音樂
 def play_sound():
-    threading.Thread(target=playsound, args=('snd/sound.mp3',), daemon=True).start()
+    global p_music
 
+    relative_path = "snd/sound.mp3"
+    #  audio_file_path = Path(relative_path).resolve()
+
+    if p_music is None:
+        # p_music = threading.Thread(target=playsound, args=('snd/sound.mp3',), daemon=True)
+        p_music = multiprocessing.Process(target=playsound, args=(relative_path,))
+        p_music.start()
+    else:
+        p_music.terminate()
+        p_music = None
+
+def stop_sound():
+    global p_music
+    if p_music is not None:
+        p_music.terminate()
+        p_music = None
+
+#
+def retrieve_path_data():
+    global game_data
+    global save_file_path
+    global dync_file_path
+    global zdata_file_path
+    zdata_file_path = ""
+    save_file_path = ""
+    dync_file_path = ""
+    with open("data.json", "r") as f:
+        game_data = json.load(f)
+        if "save_file_path" in game_data:
+            save_file_path = game_data["save_file_path"]
+        if "dync_file_path" in game_data:
+            dync_file_path = game_data["dync_file_path"]
+        if "zdata_file_path" in game_data:
+            zdata_file_path = game_data["zdata_file_path"]
 
 # 讀取全局數據文件
 def retrieve_game_data():
     # Read data from file
     global game_data
-    global app_title
     global save_file_path
     global dync_file_path
     global zdata_file_path
@@ -918,15 +999,12 @@ def retrieve_game_data():
     martial_arts_names = {}
     team_members_names = {}
     battle_events = []
-    app_title = ""
     zdata_file_path = ""
     save_file_path = ""
     dync_file_path = ""
 
     with open("data.json", "r") as f:
         game_data = json.load(f)
-        if "app_title" in game_data:
-            app_title = game_data["app_title"]
         if "save_file_path" in game_data:
             save_file_path = game_data["save_file_path"]
         if "dync_file_path" in game_data:

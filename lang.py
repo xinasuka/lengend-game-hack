@@ -1,15 +1,16 @@
 # const file for language
 # debug info is excluded
 
+TITLE_APP="金庸群俠傳修改器",
 TITLE_SAVE_PATH_SEL="選擇人物存檔文件"
 TITLE_DYNC_PATH_SEL="選擇動態數據文件"
 TITLE_DATA_PATH_SEL="選擇遊戲數據文件"
 TITLE_CHAR_DATA="人物屬性與數據"
 TITLE_BATTLE_DATA="戰鬥事件數據"
 
-TXT_SAVE_PATH="人物存檔文件位置 (*.GRP) :"
-TXT_DYNC_PATH="動態數據文件位置 (*.GRP) :"
-TXT_DATA_PATH="遊戲數據文件位置 (Z.dat) :"
+TXT_SAVE_PATH="人物存檔文件 (*.GRP) :"
+TXT_DYNC_PATH="動態數據文件 (*.GRP) :"
+TXT_DATA_PATH="遊戲數據文件 (Z.dat) :"
 
 TXT_CHAR_DATA="人物數據"
 TXT_NAME="姓 名"
@@ -39,6 +40,9 @@ TXT_BTL_HEADER_RESET="要重置"
 TXT_BTL_HEADER_TITLE="戰鬥事件"
 TXT_BTL_HEADER_STATUS="是否可戰"
 TXT_BTL_HEADER_DESC="戰鬥說明"
+
+TXT_PLAY_MUSIC="播放背景音樂"
+TXT_COPYRIGHT="© 2022-2023 Charles Liu.  App Verion 3.0"
 
 FONT_BTL_HEADER="Helvetica 14 bold"
 

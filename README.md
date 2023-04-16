@@ -23,9 +23,17 @@ attack list modify
 
 venom algorithm modify
 
+**big chagne**
+
+add features that can reset battle events to re-challenge those big events
+
 etc.
 
 stay tuned.
+
+###### **External Lib**
+
+zhconv - used for convert simple chinese to traditional chinese
 
 ##### **How to use**
 

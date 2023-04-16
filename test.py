@@ -3,6 +3,7 @@ import sys
 import json
 import binascii
 import encodings
+import zhconv
 from tkinter import *
 from tkinter import ttk
 
@@ -178,7 +179,29 @@ def test_tkinter_checkbox():
 
     root.mainloop()
 
+def test_decode():
+    # initializing string
+    str = "正是妖仙寻隐处"
+    strb = "正是妖仙尋隱處"
+
+    # encoding string
+    str_enc = str.encode(encoding='utf-8')
+
+    # printing the encoded string
+    print("The encoded string in base64 format is : ", )
+    print(str_enc)
+
+    # printing the original decoded string
+    print("The decoded string is : ", )
+    print(str_enc.decode('big5', 'strict'))
+
+def test_decode2():
+    utf8_str = "正是妖仙寻隐处"
+    print(zhconv.convert(utf8_str, 'zh-tw'))
+
+
 if __name__ == '__main__':
     #test_json_file2()
-    test_tkinter_checkbox()
+    #test_tkinter_checkbox()
+    test_decode2()
 

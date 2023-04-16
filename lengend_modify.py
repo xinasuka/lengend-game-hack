@@ -531,13 +531,14 @@ def show_battle_window():
     root.label_status = label_status
 
     # 返回，写入，刷新
-    btn = Button(pane, text=lang.BTN_RETURN, command=battle_window_btn_close)
+    btn = Button(pane, text=lang.BTN_REFRESH, command=battle_window_btn_refresh)
     btn.pack(side=TOP, fill=BOTH, expand=True, padx=10, pady=5)
     btn = Button(pane, text=lang.BTN_RESET, command=battle_window_btn_reset)
     btn.pack(side=TOP, fill=BOTH, expand=True, padx=10, pady=5)
-    btn = Button(pane, text=lang.BTN_REFRESH, command=battle_window_btn_refresh)
+    btn = Button(pane, text=lang.BTN_RETURN, command=battle_window_btn_close)
     btn.pack(side=TOP, fill=BOTH, expand=True, padx=10, pady=5)
 
+    root.protocol("WM_DELETE_WINDOW", battle_window_btn_close)
     root.update_idletasks()  # Update "requested size" from geometry manager
     root.geometry("+%d+%d" % ((root.winfo_screenwidth() - root.winfo_reqwidth()) / 2,
                               (root.winfo_screenheight() - root.winfo_reqheight()) / 2))
@@ -696,6 +697,7 @@ def show_character_window():
     btn = Button(pane, text=lang.BTN_REFRESH, command=char_window_btn_refresh)
     btn.pack(side=RIGHT, fill=BOTH, expand=True, padx=4)
 
+    root.protocol("WM_DELETE_WINDOW", char_window_btn_close)
     root.update_idletasks()  # Update "requested size" from geometry manager
     root.geometry("+%d+%d" % ((root.winfo_screenwidth() - root.winfo_reqwidth()) / 2,
                               (root.winfo_screenheight() - root.winfo_reqheight()) / 2))
